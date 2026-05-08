@@ -1,0 +1,70 @@
+<mxfile host="65bd71144e">
+    <diagram id="OeKiJ1W5iib-S-pgb3cT" name="Page-1">
+        <mxGraphModel dx="2332" dy="496" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="AgriFober" style="swimlane;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-910" y="100" width="1430" height="2230" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" value="S&#39;inscrire" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="2">
+                    <mxGeometry x="130" y="170" width="140" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" value="Se connecter / se deconnecter" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="2">
+                    <mxGeometry x="140" y="400" width="140" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" value="Gerer son profile&amp;nbsp;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="2">
+                    <mxGeometry x="150" y="500" width="140" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="Use Case" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="2">
+                    <mxGeometry x="560" y="610" width="140" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="14" value="Voir le landing page&amp;nbsp;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="2">
+                    <mxGeometry x="130" y="270" width="140" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="18" value="Gerer le catalogue de produits" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="2">
+                    <mxGeometry x="130" y="980" width="140" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="19" value="Gerer les comptes utilisaterus" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="2">
+                    <mxGeometry x="120" y="1080" width="140" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="20" value="Gérer le réferentiel des cultures&amp;nbsp;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="2">
+                    <mxGeometry x="110" y="880" width="140" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" value="Consulter le dashboard" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="2">
+                    <mxGeometry x="130" y="1180" width="140" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="24" value="Consulter la méteo" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="2">
+                    <mxGeometry x="70" y="1490" width="140" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" value="Consulter le catalogue&amp;nbsp;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="2">
+                    <mxGeometry x="70" y="1600" width="140" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="Intéragir avec l&#39;assistant IA" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="2">
+                    <mxGeometry x="80" y="1710" width="140" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="Authenticated user" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+                    <mxGeometry x="-1060" y="530" width="30" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="Admin" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+                    <mxGeometry x="-1070" y="1140" width="30" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="Guest" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+                    <mxGeometry x="-1060" y="320" width="30" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="Agriculteur" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+                    <mxGeometry x="-1070" y="1680" width="30" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="DeepSeek Api" style="shape=note2;boundedLbl=1;whiteSpace=wrap;html=1;size=25;verticalAlign=top;align=center;" vertex="1" parent="1">
+                    <mxGeometry x="580" y="320" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="OpenWeather API" style="shape=note2;boundedLbl=1;whiteSpace=wrap;html=1;size=25;verticalAlign=top;align=center;" vertex="1" parent="1">
+                    <mxGeometry x="580" y="560" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="Google Vision API" style="shape=note2;boundedLbl=1;whiteSpace=wrap;html=1;size=25;verticalAlign=top;align=center;" vertex="1" parent="1">
+                    <mxGeometry x="590" y="850" width="120" height="60" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
