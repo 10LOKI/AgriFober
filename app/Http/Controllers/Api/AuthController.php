@@ -25,7 +25,7 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'confirmed', Password::defaults()],
-            'role' => ['sometimes', 'in:admin,agriculteur'],
+            'role' => ['sometimes', 'in:admin,agriculteur,technicien'],
             'region' => ['nullable', 'string', 'max:255'],
             'experience_level' => ['nullable', 'in:debutant,intermediaire,expert'],
             'surface_totale' => ['nullable', 'numeric', 'min:0'],
@@ -45,9 +45,9 @@ class AuthController extends Controller
             'experience_level' => $validated['experience_level'] ?? null,
             'surface_totale' => $validated['surface_totale'] ?? null,
             'employee_code' => $validated['employee_code'] ?? null,
+            'is_approved' => true, // Auto-approve for direct registration
         ]);
 
-        // Create API token
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
@@ -112,6 +112,72 @@ class AuthController extends Controller
     {
         return response()->json([
             'user' => $request->user(),
+        ]);
+    }
+
+    /**
+     * Get farmer profile with summary statistics.
+     * GET /api/farmer/profile
+     */
+    public function farmerProfile(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        
+        if (!$user->isAgriculteur() && !$user->isAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
+        $parcelsCount = $user->parcels()->count();
+        $surfaceTotale = $user->parcels()->sum('surface');
+        $culturesUsed = $user->parcels()
+            ->whereNotNull('culture_id')
+            ->distinct('culture_id')
+            ->count();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'profile' => $user->only(['id', 'username', 'name', 'email', 'region', 'experience_level', 'surface_totale', 'created_at']),
+                'statistics' => [
+                    'total_parcels' => $parcelsCount,
+                    'total_surface_ha' => round($surfaceTotale, 4),
+                    'cultures_cultivated' => $culturesUsed,
+                ]
+            ]
+        ]);
+    }
+
+    /**
+     * Update farmer profile.
+     * PUT /api/farmer/profile
+     */
+    public function updateProfile(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        
+        if (!$user->isAgriculteur() && !$user->isAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
+        $validated = $request->validate([
+            'name' => ['sometimes', 'string', 'max:255'],
+            'region' => ['nullable', 'string', 'max:255'],
+            'experience_level' => ['nullable', 'in:debutant,intermediaire,expert'],
+            'surface_totale' => ['nullable', 'numeric', 'min:0'],
+        ]);
+
+        $user->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile updated successfully',
+            'data' => $user
         ]);
     }
 }

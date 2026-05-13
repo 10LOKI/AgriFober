@@ -13,11 +13,37 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Create admin user
+        User::firstOrCreate(
+            ['email' => 'admin@agriforb.com'],
+            [
+                'username' => 'admin',
+                'name' => 'Admin Agriforb',
+                'password' => bcrypt('Admin@2024'),
+                'role' => 'admin',
+                'is_approved' => true,
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Create test farmer
+        User::firstOrCreate(
+            ['email' => 'farmer@example.com'],
+            [
+                'username' => 'testfarmer',
+                'name' => 'Test Farmer',
+                'password' => bcrypt('Farmer@2024'),
+                'role' => 'agriculteur',
+                'is_approved' => true,
+                'region' => 'Dakar',
+                'experience_level' => 'intermediaire',
+            ]
+        );
+
+        // Seed reference data
+        $this->call([
+            RegionSeeder::class,
+            CultureSeeder::class,
+            ProductSeeder::class,
         ]);
     }
 }

@@ -8,27 +8,58 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\WeatherDataController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
-
 // Public Routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// Protected Routes (Require Sanctum Authentication)
+// Authenticated Routes
 Route::middleware('auth:sanctum')->group(function () {
     // User Profile
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
+    
+    // Farmer Profile & Stats (accessible to farmer & admin)
+    Route::prefix('farmer')->group(function () {
+        Route::get('/profile', [AuthController::class, 'farmerProfile']);
+        Route::put('/profile', [AuthController::class, 'updateProfile']);
+    });
 
-    // Future endpoints (controllers to be created):
-    // parcels, cultures, products, weather, interaction-ia
+    // Catalogue (read-only for all authenticated roles)
+    Route::get('/cultures', [CultureController::class, 'index']);
+    Route::get('/cultures/{culture}', [CultureController::class, 'show']);
+    
+    Route::get('/products', [ProductController::class, 'index']);
+    Route::get('/products/{product}', [ProductController::class, 'show']);
+
+    // Parcels (full CRUD for owner + admin via policies)
+    Route::apiResource('parcels', ParcelController::class);
+    
+    // Weather routes (access through policies ownership checks)
+    Route::get('/parcels/{parcel}/weather', [WeatherDataController::class, 'current']);
+    Route::get('/parcels/{parcel}/weather/forecast', [WeatherDataController::class, 'forecast']);
+    
+    // IA Chat (all authenticated)
+    Route::prefix('ai')->group(function () {
+        Route::post('/chat', [InteractionIAController::class, 'chat']);
+        Route::get('/history', [InteractionIAController::class, 'history']);
+        Route::delete('/history/{id}', [InteractionIAController::class, 'destroy']);
+    });
+
+    // Admin routes (full management)
+    Route::middleware('role:admin')->group(function () {
+        // Full CRUD for cultures (admin can create/update/delete)
+        Route::post('/cultures', [CultureController::class, 'store']);
+        Route::put('/cultures/{culture}', [CultureController::class, 'update']);
+        Route::delete('/cultures/{culture}', [CultureController::class, 'destroy']);
+        
+        // Full CRUD for products
+        Route::post('/products', [ProductController::class, 'store']);
+        Route::put('/products/{product}', [ProductController::class, 'update']);
+        Route::delete('/products/{product}', [ProductController::class, 'destroy']);
+        
+        // Admin weather access (all parcels)
+        Route::get('/weather/parcel/{parcel}', [WeatherDataController::class, 'current']);
+    });
 });
+
+
