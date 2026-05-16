@@ -73,10 +73,6 @@
                     <i class="fas fa-plus-circle text-purple-600 mr-3"></i>
                     <span class="text-purple-800">Ajouter un produit</span>
                 </a>
-                <a href="{{ route('admin.regions.create') }}" class="flex items-center p-3 bg-orange-50 hover:bg-orange-100 rounded transition">
-                    <i class="fas fa-map-marker-alt text-orange-600 mr-3"></i>
-                    <span class="text-orange-800">Ajouter une région</span>
-                </a>
             </div>
         </div>
 
