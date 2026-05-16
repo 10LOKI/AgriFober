@@ -10,7 +10,6 @@ export default function Sidebar({ open, setOpen }) {
         { name: 'Agriculteurs', href: '/admin/users', icon: '👨‍🌾' },
         { name: 'Cultures', href: '/admin/cultures', icon: '🌾' },
         { name: 'Produits', href: '/admin/products', icon: '📦' },
-        { name: 'Régions', href: '/admin/regions', icon: '🗺️' },
         { name: 'Logs IA', href: '/admin/ai-logs', icon: '🤖' },
     ];
 
