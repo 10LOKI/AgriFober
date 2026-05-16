@@ -53,11 +53,6 @@
                         <i class="fas fa-box mr-3"></i>
                         Produits
                     </a>
-                    <a href="{{ route('admin.regions.index') }}" 
-                       class="flex items-center px-4 py-3 rounded-lg {{ request()->routeIs('admin.regions.*') ? 'bg-green-100 text-green-800 font-semibold' : 'text-gray-700 hover:bg-gray-100' }}">
-                        <i class="fas fa-map mr-3"></i>
-                        Régions
-                    </a>
                 </div>
             </nav>
         </aside>
