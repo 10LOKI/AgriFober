@@ -44,6 +44,4 @@ Route::middleware(['web', 'auth'])->prefix('admin')->name('admin.')->group(funct
     // Products
     Route::resource('products', AdminProductController::class);
     
-    // Regions
-    Route::resource('regions', RegionController::class)->except(['show']);
 });
