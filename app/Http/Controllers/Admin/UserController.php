@@ -10,37 +10,41 @@ class UserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth', 'role:admin']);
+        $this->middleware('auth');
     }
 
     public function index(Request $request)
     {
-        $users = User::orderBy('created_at', 'desc')->paginate(15);
-
-        return inertia('Admin/Users/Index', [
-            'users' => $users,
-            'auth' => ['user' => auth()->user()]
-        ]);
+        $query = User::orderBy('created_at', 'desc');
+        
+        if ($request->has('filter')) {
+            if ($request->filter === 'pending') {
+                $query->where('is_approved', false);
+            } elseif ($request->filter === 'approved') {
+                $query->where('is_approved', true);
+            }
+        }
+        
+        $users = $query->paginate(15);
+        return view('admin.users.index', compact('users'));
     }
 
     public function show(User $user)
     {
-        return inertia('Admin/Users/Show', [
-            'user' => $user,
-            'auth' => ['user' => auth()->user()]
-        ]);
+        $user->load(['parcels' => function ($q) {
+            $q->with('culture')->orderBy('created_at', 'desc');
+        }]);
+        return view('admin.users.show', compact('user'));
     }
 
     public function create()
     {
-        return inertia('Admin/Users/Create', [
-            'auth' => ['user' => auth()->user()]
-        ]);
+        $user = new User();
+        return view('admin.users.edit', compact('user'));
     }
 
     public function store(Request $request)
     {
-        // Implementation similar to AuthController but admin-only
         $validated = $request->validate([
             'username' => ['required', 'string', 'max:255', 'unique:users,username'],
             'name' => ['required', 'string', 'max:255'],
@@ -48,39 +52,40 @@ class UserController extends Controller
             'password' => ['required', 'string', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
             'role' => ['required', 'in:admin,agriculteur,technicien'],
             'region' => ['nullable', 'string', 'max:255'],
+            'experience_level' => ['nullable', 'in:debutant,intermediaire,expert'],
             'is_approved' => ['boolean'],
         ]);
 
-        User::create([
-            'username' => $validated['username'],
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => bcrypt($validated['password']),
-            'role' => $validated['role'],
-            'region' => $validated['region'] ?? null,
-            'is_approved' => $validated['is_approved'] ?? false,
-        ]);
+        $validated['password'] = bcrypt($validated['password']);
 
-        return redirect()->route('admin.users.index')->with('success', 'Utilisateur créé');
+        User::create($validated);
+
+        return redirect()->route('admin.users.index')->with('success', 'Utilisateur créé avec succès');
     }
 
     public function edit(User $user)
     {
-        return inertia('Admin/Users/Edit', [
-            'user' => $user,
-            'auth' => ['user' => auth()->user()]
-        ]);
+        return view('admin.users.edit', compact('user'));
     }
 
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
+            'username' => ['required', 'string', 'max:255', 'unique:users,username,'.$user->id],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$user->id],
             'role' => ['required', 'in:admin,agriculteur,technicien'],
             'region' => ['nullable', 'string', 'max:255'],
+            'experience_level' => ['nullable', 'in:debutant,intermediaire,expert'],
             'is_approved' => ['boolean'],
         ]);
+
+        // Ne pas overwriter le password si pas fourni
+        if ($request->filled('password')) {
+            $validated['password'] = bcrypt($request->password);
+        } else {
+            unset($validated['password']);
+        }
 
         $user->update($validated);
 
@@ -96,13 +101,13 @@ class UserController extends Controller
     public function reject(User $user)
     {
         $user->update(['is_approved' => false]);
-        return back()->with('warning', 'Utilisateur rejeté');
+        return back()->with('warning', 'Utilisateur marqué comme non approuvé');
     }
 
     public function destroy(User $user)
     {
         if ($user->id === auth()->id()) {
-            return back()->with('error', 'Vous ne pouvez supprimer votre propre compte');
+            return back()->with('error', 'Vous ne pouvez pas supprimer votre propre compte');
         }
         $user->delete();
         return redirect()->route('admin.users.index')->with('success', 'Utilisateur supprimé');

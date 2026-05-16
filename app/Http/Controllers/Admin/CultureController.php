@@ -10,26 +10,29 @@ class CultureController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth', 'role:admin']);
+        $this->middleware('auth');
     }
 
     public function index(Request $request)
     {
-        $cultures = Culture::withCount('parcels', 'products')
-            ->orderBy('nom_commun')
-            ->paginate(15);
-
-        return inertia('Admin/Cultures/Index', [
-            'cultures' => $cultures,
-            'auth' => ['user' => auth()->user()]
-        ]);
+        $query = Culture::withCount('parcels', 'products');
+        
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nom_commun', 'like', "%$search%")
+                  ->orWhere('nom_scientifique', 'like', "%$search%");
+            });
+        }
+        
+        $cultures = $query->orderBy('nom_commun')->paginate(15);
+        return view('admin.cultures.index', compact('cultures'));
     }
 
     public function create()
     {
-        return inertia('Admin/Cultures/Create', [
-            'auth' => ['user' => auth()->user()]
-        ]);
+        $culture = new Culture();
+        return view('admin.cultures.edit', compact('culture'));
     }
 
     public function store(Request $request)
@@ -50,25 +53,18 @@ class CultureController extends Controller
 
         Culture::create($validated);
 
-        return redirect()->route('admin.cultures.index')->with('success', 'Culture créée');
+        return redirect()->route('admin.cultures.index')->with('success', 'Culture créée avec succès');
     }
 
     public function show(Culture $culture)
     {
         $culture->load(['parcels.user', 'products']);
-
-        return inertia('Admin/Cultures/Show', [
-            'culture' => $culture,
-            'auth' => ['user' => auth()->user()]
-        ]);
+        return view('admin.cultures.show', compact('culture'));
     }
 
     public function edit(Culture $culture)
     {
-        return inertia('Admin/Cultures/Edit', [
-            'culture' => $culture,
-            'auth' => ['user' => auth()->user()]
-        ]);
+        return view('admin.cultures.edit', compact('culture'));
     }
 
     public function update(Request $request, Culture $culture)

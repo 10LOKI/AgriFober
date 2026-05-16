@@ -10,26 +10,26 @@ class ProductController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth', 'role:admin']);
+        $this->middleware('auth');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::withCount('parcels')
-            ->orderBy('nom_commercial')
-            ->paginate(15);
-
-        return inertia('Admin/Products/Index', [
-            'products' => $products,
-            'auth' => ['user' => auth()->user()]
-        ]);
+        $query = Product::query();
+        
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where('nom_commercial', 'like', "%$search%");
+        }
+        
+        $products = $query->orderBy('nom_commercial')->paginate(15);
+        return view('admin.products.index', compact('products'));
     }
 
     public function create()
     {
-        return inertia('Admin/Products/Create', [
-            'auth' => ['user' => auth()->user()]
-        ]);
+        $product = new Product();
+        return view('admin.products.edit', compact('product'));
     }
 
     public function store(Request $request)
@@ -53,25 +53,18 @@ class ProductController extends Controller
 
         Product::create($validated);
 
-        return redirect()->route('admin.products.index')->with('success', 'Produit créé');
+        return redirect()->route('admin.products.index')->with('success', 'Produit créé avec succès');
     }
 
     public function show(Product $product)
     {
         $product->load('cultures');
-
-        return inertia('Admin/Products/Show', [
-            'product' => $product,
-            'auth' => ['user' => auth()->user()]
-        ]);
+        return view('admin.products.show', compact('product'));
     }
 
     public function edit(Product $product)
     {
-        return inertia('Admin/Products/Edit', [
-            'product' => $product,
-            'auth' => ['user' => auth()->user()]
-        ]);
+        return view('admin.products.edit', compact('product'));
     }
 
     public function update(Request $request, Product $product)
@@ -90,6 +83,10 @@ class ProductController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
+            // Supprimer l'ancienne image si existe
+            if ($product->image) {
+                \Storage::disk('public')->delete($product->image);
+            }
             $validated['image'] = $request->file('image')->store('products', 'public');
         }
 
@@ -100,6 +97,9 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
+        if ($product->image) {
+            \Storage::disk('public')->delete($product->image);
+        }
         $product->delete();
         return redirect()->route('admin.products.index')->with('success', 'Produit supprimé');
     }

@@ -14,22 +14,19 @@ class DashboardController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth', 'role:admin']);
+        $this->middleware('auth');
     }
 
     public function index()
     {
         $stats = [
-            'users' => User::count(),
-            'parcels' => Parcel::count(),
-            'cultures' => Culture::count(),
-            'products' => Product::count(),
-            'ai_interactions_today' => InteractionIA::whereDate('created_at', today())->count(),
+            'users' => \App\Models\User::count(),
+            'parcels' => \App\Models\Parcel::count(),
+            'cultures' => \App\Models\Culture::count(),
+            'products' => \App\Models\Product::count(),
+            'ai_interactions_today' => \App\Models\InteractionIA::whereDate('created_at', today())->count(),
         ];
 
-        return inertia('Admin/Dashboard', [
-            'stats' => $stats,
-            'auth' => ['user' => auth()->user()]
-        ]);
+        return view('admin.dashboard', compact('stats'));
     }
 }
