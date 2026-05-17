@@ -23,6 +23,7 @@ export default function CulturesIndex() {
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Saison</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Région</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Temp. Min/Max (°C)</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Besoins Eau (mm)</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
@@ -37,6 +38,7 @@ export default function CulturesIndex() {
                                 </td>
                                 <td className="px-6 py-4 text-sm capitalize">{culture.type}</td>
                                 <td className="px-6 py-4 text-sm capitalize">{culture.saison}</td>
+                                <td className="px-6 py-4 text-sm">{culture.region || '-'}</td>
                                 <td className="px-6 py-4 text-sm">
                                     {culture.temp_min}°C / {culture.temp_max}°C
                                 </td>

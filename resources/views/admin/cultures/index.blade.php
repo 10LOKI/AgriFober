@@ -40,6 +40,7 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 text-sm capitalize">{{ $culture->saison }}</td>
+                    <td class="px-6 py-4 text-sm">{{ $culture->region ?? '-' }}</td>
                     <td class="px-6 py-4 text-sm">
                         {{ $culture->temp_min ?? '-' }}°C / {{ $culture->temp_max ?? '-' }}°C
                     </td>
@@ -64,7 +65,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" class="px-6 py-10 text-center text-gray-500">
+                    <td colspan="7" class="px-6 py-10 text-center text-gray-500">
                         Aucune culture définie.
                     </td>
                 </tr>

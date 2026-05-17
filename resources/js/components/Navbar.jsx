@@ -25,7 +25,6 @@ export default function Navbar({ user, toggleSidebar }) {
                          url.startsWith('/admin/users') ? 'Gestion Agriculteurs' :
                          url.startsWith('/admin/cultures') ? 'Gestion Cultures' :
                          url.startsWith('/admin/products') ? 'Gestion Produits' :
-                         url.startsWith('/admin/regions') ? 'Gestion Régions' :
                          'Administration'}
                     </h2>
                 </div>

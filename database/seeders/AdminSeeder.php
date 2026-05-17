@@ -22,7 +22,6 @@ class AdminSeeder extends Seeder
                 'password' => Hash::make('Super@1234'),
                 'role' => 'admin',
                 'is_approved' => true,
-                'region' => 'Dakar',
             ],
             [
                 'email' => 'tech@test.com',
@@ -31,7 +30,6 @@ class AdminSeeder extends Seeder
                 'password' => Hash::make('Tech@1234'),
                 'role' => 'technicien',
                 'is_approved' => true,
-                'region' => 'Thiès',
             ],
             [
                 'email' => 'farmer@test.com',
@@ -40,7 +38,6 @@ class AdminSeeder extends Seeder
                 'password' => Hash::make('Farmer@1234'),
                 'role' => 'agriculteur',
                 'is_approved' => true,
-                'region' => 'Dakar',
                 'experience_level' => 'expert',
             ],
         ];

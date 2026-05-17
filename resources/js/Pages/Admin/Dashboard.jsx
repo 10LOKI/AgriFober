@@ -10,6 +10,8 @@ export default function Dashboard() {
         cultures: 0,
         products: 0,
         ai_interactions_today: 0,
+        users_by_region: [],
+        cultures_by_region: [],
     };
 
     return (
@@ -69,6 +71,40 @@ export default function Dashboard() {
                             Ajouter un produit
                         </a>
                     </div>
+                </div>
+            </div>
+
+            {/* Stats par région */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="bg-white rounded-lg shadow p-6">
+                    <h3 className="text-lg font-semibold mb-4">Agriculteurs par région</h3>
+                    {stats.users_by_region && stats.users_by_region.length > 0 ? (
+                        <ul className="space-y-2">
+                            {stats.users_by_region.map((item, i) => (
+                                <li key={i} className="flex justify-between text-sm">
+                                    <span className="text-gray-700">{item.region}</span>
+                                    <span className="font-semibold text-green-600">{item.count} agriculteur(s)</span>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p className="text-gray-500 text-sm">Aucune région renseignée.</p>
+                    )}
+                </div>
+                <div className="bg-white rounded-lg shadow p-6">
+                    <h3 className="text-lg font-semibold mb-4">Cultures par région</h3>
+                    {stats.cultures_by_region && stats.cultures_by_region.length > 0 ? (
+                        <ul className="space-y-2">
+                            {stats.cultures_by_region.map((item, i) => (
+                                <li key={i} className="flex justify-between text-sm">
+                                    <span className="text-gray-700">{item.region}</span>
+                                    <span className="font-semibold text-purple-600">{item.count} culture(s)</span>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p className="text-gray-500 text-sm">Aucune région renseignée pour les cultures.</p>
+                    )}
                 </div>
             </div>
         </div>

@@ -133,6 +133,44 @@
                 </a>
             </div>
         </div>
-    @endif
+        @endif
+    </div>
+
+    <!-- Répartition par région -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Agriculteurs par région -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">Agriculteurs par région</h3>
+            @if($stats['users_by_region']->count() > 0)
+                <ul class="space-y-2">
+                    @foreach($stats['users_by_region'] as $item)
+                        <li class="flex justify-between text-sm">
+                            <span class="text-gray-700">{{ $item->region }}</span>
+                            <span class="font-semibold text-green-600">{{ $item->count }} agriculteur(s)</span>
+                        </li>
+                    @endforeach
+                </ul>
+            @else
+                <p class="text-gray-500 text-sm">Aucune région renseignée.</p>
+            @endif
+        </div>
+
+        <!-- Cultures par région -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">Cultures par région</h3>
+            @if($stats['cultures_by_region']->count() > 0)
+                <ul class="space-y-2">
+                    @foreach($stats['cultures_by_region'] as $item)
+                        <li class="flex justify-between text-sm">
+                            <span class="text-gray-700">{{ $item->region }}</span>
+                            <span class="font-semibold text-purple-600">{{ $item->count }} culture(s)</span>
+                        </li>
+                    @endforeach
+                </ul>
+            @else
+                <p class="text-gray-500 text-sm">Aucune région renseignée pour les cultures.</p>
+            @endif
+        </div>
+    </div>
 </div>
 @endsection

@@ -43,6 +43,11 @@
         </div>
 
         <div class="bg-gray-50 p-4 rounded">
+            <h4 class="font-semibold mb-2">Région</h4>
+            <p class="text-gray-900">{{ $culture->region ?? 'Non spécifié' }}</p>
+        </div>
+
+        <div class="bg-gray-50 p-4 rounded">
             <h4 class="font-semibold mb-2">Type de sol</h4>
             <p class="text-gray-900">{{ $culture->soil_type ?? 'Non spécifié' }}</p>
         </div>

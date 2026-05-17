@@ -48,6 +48,7 @@ class CultureController extends Controller
             'temp_max' => ['nullable', 'integer'],
             'besoin_eau_cycle' => ['nullable', 'integer'],
             'soil_type' => ['nullable', 'in:argileux,sableux,limoneux,humifere'],
+            'region' => ['nullable', 'string', 'max:255'],
             'conseils' => ['nullable', 'string'],
         ]);
 
@@ -80,6 +81,7 @@ class CultureController extends Controller
             'temp_max' => ['nullable', 'integer'],
             'besoin_eau_cycle' => ['nullable', 'integer'],
             'soil_type' => ['nullable', 'in:argileux,sableux,limoneux,humifere'],
+            'region' => ['nullable', 'string', 'max:255'],
             'conseils' => ['nullable', 'string'],
         ]);
 
