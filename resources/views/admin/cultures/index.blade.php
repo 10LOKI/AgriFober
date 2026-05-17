@@ -20,6 +20,7 @@
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Temp. Min/Max (°C)</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Besoins Eau</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Region</th>
             </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
