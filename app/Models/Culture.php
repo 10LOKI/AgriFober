@@ -26,6 +26,7 @@ class Culture extends Model
         'besoin_eau_cycle',
         'soil_type',
         'conseils',
+        'region'
     ];
 
     /**

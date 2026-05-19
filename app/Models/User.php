@@ -30,6 +30,7 @@ class User extends Authenticatable
         'surface_totale',
         'employee_code',
         'last_audit_at',
+        'is_approved',
     ];
 
     /**
@@ -80,7 +81,7 @@ class User extends Authenticatable
      */
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->role === RoleEnum::ADMIN->value;
     }
 
     /**
@@ -88,6 +89,14 @@ class User extends Authenticatable
      */
     public function isAgriculteur(): bool
     {
-        return $this->role === 'agriculteur';
+        return $this->role === RoleEnum::AGRICULTEUR->value;
+    }
+
+    /**
+     * Check if user is a technicien.
+     */
+    public function isTechnicien(): bool
+    {
+        return $this->role === RoleEnum::TECHNICIEN->value;
     }
 }
