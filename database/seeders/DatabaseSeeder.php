@@ -20,7 +20,6 @@ class DatabaseSeeder extends Seeder
 
         // Seed reference data
         $this->call([
-            RegionSeeder::class,
             CultureSeeder::class,
             ProductSeeder::class,
         ]);

@@ -30,6 +30,7 @@ class User extends Authenticatable
         'surface_totale',
         'employee_code',
         'last_audit_at',
+        'is_approved',
     ];
 
     /**

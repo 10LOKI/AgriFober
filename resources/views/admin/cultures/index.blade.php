@@ -5,78 +5,110 @@
 
 @section('content')
 <div class="mb-6 flex justify-between items-center">
-    <a href="{{ route('admin.cultures.create') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
-        <i class="fas fa-plus mr-2"></i>Ajouter Culture
+    <a href="{{ route('admin.cultures.create') }}" class="inline-flex items-center bg-agraire-600 hover:bg-agraire-700 text-white font-semibold px-5 py-2.5 rounded-xl shadow-md shadow-agraire-600/15 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+        <i class="fas fa-seedling mr-2 text-sm"></i>Ajouter Culture
     </a>
 </div>
 
-<div class="bg-white rounded-lg shadow overflow-hidden">
-    <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-            <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Saison</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Temp. Min/Max (°C)</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Besoins Eau</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Region</th>
-            </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-            @forelse($cultures as $culture)
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4">
-                        <div class="font-medium text-gray-900">{{ $culture->nom_commun }}</div>
-                        <div class="text-xs text-gray-500">{{ $culture->nom_scientifique }}</div>
-                    </td>
-                    <td class="px-6 py-4 text-sm">
-                        <span class="px-2 py-1 rounded-full text-xs
-                            {{ $culture->type === 'fruit' ? 'bg-purple-100 text-purple-800' : '' }}
-                            {{ $culture->type === 'legume' ? 'bg-green-100 text-green-800' : '' }}
-                            {{ $culture->type === 'cereale' ? 'bg-yellow-100 text-yellow-800' : '' }}
-                            {{ $culture->type === 'legumineuse' ? 'bg-blue-100 text-blue-800' : '' }}">
-                            {{ $culture->type }}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 text-sm capitalize">{{ $culture->saison }}</td>
-                    <td class="px-6 py-4 text-sm">{{ $culture->region ?? '-' }}</td>
-                    <td class="px-6 py-4 text-sm">
-                        {{ $culture->temp_min ?? '-' }}°C / {{ $culture->temp_max ?? '-' }}°C
-                    </td>
-                    <td class="px-6 py-4 text-sm">
-                        {{ $culture->besoin_eau_cycle ? $culture->besoin_eau_cycle.' mm' : '-' }}
-                    </td>
-                    <td class="px-6 py-4 text-sm space-x-2">
-                        <a href="{{ route('admin.cultures.show', $culture) }}" class="text-blue-600 hover:text-blue-900" title="Voir">
-                            <i class="fas fa-eye"></i>
-                        </a>
-                        <a href="{{ route('admin.cultures.edit', $culture) }}" class="text-yellow-600 hover:text-yellow-900" title="Éditer">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        <form method="POST" action="{{ route('admin.cultures.destroy', $culture) }}" class="inline" onsubmit="return confirm('Supprimer cette culture ?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:text-red-900" title="Supprimer">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-            @empty
+<div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50/80 text-[11px] uppercase tracking-wider font-bold text-gray-500">
                 <tr>
-                    <td colspan="7" class="px-6 py-10 text-center text-gray-500">
-                        Aucune culture définie.
-                    </td>
+                    <th class="px-6 py-3.5 text-left">Nom</th>
+                    <th class="px-6 py-3.5 text-left">Type</th>
+                    <th class="px-6 py-3.5 text-left">Saison</th>
+                    <th class="px-6 py-3.5 text-left">Région</th>
+                    <th class="px-6 py-3.5 text-left">Temp. Min/Max (°C)</th>
+                    <th class="px-6 py-3.5 text-left">Besoins Eau</th>
+                    <th class="px-6 py-3.5 text-right pr-6">Actions</th>
                 </tr>
-            @endforelse
-        </tbody>
-    </table>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-100">
+                @forelse($cultures as $culture)
+                    <tr class="hover:bg-slate-50/80 transition-colors duration-150 group">
+                        <td class="px-6 py-4">
+                            <div class="font-medium text-slate-900">{{ $culture->nom_commun }}</div>
+                            <div class="text-xs text-gray-400">{{ $culture->nom_scientifique ?? '—' }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-1 text-xs font-bold rounded-full border tracking-wide
+                                {{ $culture->type === 'fruit' ? 'bg-purple-50 text-purple-700 border-purple-100' : '' }}
+                                {{ $culture->type === 'legume' ? 'bg-agraire-50 text-agraire-700 border-agraire-100' : '' }}
+                                {{ $culture->type === 'cereale' ? 'bg-amber-50 text-amber-700 border-amber-100' : '' }}
+                                {{ $culture->type === 'legumineuse' ? 'bg-blue-50 text-blue-700 border-blue-100' : '' }}
+                                {{ $culture->type === 'autre' ? 'bg-slate-50 text-slate-700 border-slate-100' : '' }}">
+                                {{ $culture->type }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm capitalize text-gray-600">{{ $culture->saison }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500">
+                            @if($culture->region)
+                                <span class="inline-flex items-center"><i class="fas fa-map-marker-alt mr-1.5 text-amber-500 text-xs"></i>{{ $culture->region }}</span>
+                            @else
+                                <span class="text-gray-300 italic">—</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">
+                            {{ $culture->temp_min ?? '-' }}°C / {{ $culture->temp_max ?? '-' }}°C
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">
+                            {{ $culture->besoin_eau_cycle ?? '-' }} mm
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right pr-6">
+                            <div class="flex items-center justify-end gap-1.5">
+                                <a href="{{ route('admin.cultures.show', $culture) }}" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Voir">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{{ route('admin.cultures.edit', $culture) }}" class="p-2 text-amber-500 hover:bg-amber-50 rounded-lg transition-colors" title="Éditer">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form method="POST" action="{{ route('admin.cultures.destroy', $culture) }}" class="inline m-0" onsubmit="return confirm('Supprimer cette culture ?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Supprimer">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="7" class="px-6 py-16 text-center">
+                            <div class="flex flex-col items-center justify-center space-y-3">
+                                <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center">
+                                    <i class="fas fa-seedling text-2xl text-slate-300"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-500">Aucune culture définie</p>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </div>
 
 @if($cultures->hasPages())
-    <div class="mt-6">
-        {{ $cultures->links() }}
+    <div class="mt-6 flex flex-wrap items-center justify-center gap-1.5">
+        @foreach($cultures->links()->elements as $element)
+            @if(is_string($element))
+                <span class="px-3 py-2 text-sm text-gray-400">{{ $element }}</span>
+            @endif
+            @if(is_array($element))
+                @foreach($element as $page => $url)
+                    <a href="{{ $url }}" class="px-3.5 py-2 text-sm font-semibold rounded-lg transition-all duration-150
+                        {{ $page == $cultures->currentPage()
+                            ? 'bg-agraire-600 text-white shadow-md shadow-agraire-600/15'
+                            : 'bg-white text-gray-600 border border-gray-200 hover:bg-slate-50 hover:border-gray-300' }}">
+                        {{ $page }}
+                    </a>
+                @endforeach
+            @endif
+        @endforeach
     </div>
 @endif
 @endsection

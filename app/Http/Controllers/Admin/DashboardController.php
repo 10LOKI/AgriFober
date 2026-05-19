@@ -21,17 +21,18 @@ class DashboardController extends Controller
     public function index()
     {
         $stats = [
-            'users' => \App\Models\User::count(),
-            'parcels' => \App\Models\Parcel::count(),
-            'cultures' => \App\Models\Culture::count(),
-            'products' => \App\Models\Product::count(),
-            'ai_interactions_today' => \App\Models\InteractionIA::whereDate('created_at', today())->count(),
-            'users_by_region' => \App\Models\User::whereNotNull('region')
+            'users'                  => \App\Models\User::count(),
+            'parcels'                => \App\Models\Parcel::count(),
+            'cultures'               => \App\Models\Culture::count(),
+            'products'               => \App\Models\Product::count(),
+            'ai_interactions_today'  => \App\Models\InteractionIA::whereDate('created_at', today())->count(),
+            'pending_users_count'    => \App\Models\User::where('is_approved', false)->count(),
+            'users_by_region'        => \App\Models\User::whereNotNull('region')
                 ->select('region', DB::raw('count(*) as count'))
                 ->groupBy('region')
                 ->orderByDesc('count')
                 ->get(),
-            'cultures_by_region' => \App\Models\Culture::whereNotNull('region')
+            'cultures_by_region'     => \App\Models\Culture::whereNotNull('region')
                 ->select('region', DB::raw('count(*) as count'))
                 ->groupBy('region')
                 ->orderByDesc('count')

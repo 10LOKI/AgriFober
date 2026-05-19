@@ -15,16 +15,16 @@
                         agraire: {
                             50: '#f0fdf4',
                             100: '#dcfce7',
-                            600: '#059669', /* Vert principal */
+                            600: '#059669',
                             700: '#047857',
                             800: '#065f46',
                         },
                         ambre: {
-                            500: '#f59e0b', /* Accent or/terre */
+                            500: '#f59e0b',
                             600: '#d97706',
                         },
                         neutre: {
-                            800: '#1f2937', /* Texte principal */
+                            800: '#1f2937',
                             900: '#111827',
                         }
                     }
@@ -45,7 +45,6 @@
                 margin-left: 0;
             }
         }
-        /* Amélioration de la scrollbar pour un rendu plus propre */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -65,6 +64,7 @@
 <body class="h-full text-neutre-800 antialiased font-sans">
     <div class="flex h-screen overflow-hidden bg-gray-50">
         
+        <!-- Sidebar -->
         <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-66 bg-neutre-900 text-gray-300 shadow-xl transform transition-all duration-300 ease-in-out lg:translate-x-0 sidebar-inactive flex flex-col border-r border-neutre-800">
             <div class="flex items-center justify-between h-16 px-6 border-b border-neutre-800 bg-neutre-900/50 backdrop-blur-md">
                 <div class="flex items-center space-x-2">
@@ -79,6 +79,7 @@
                 </button>
             </div>
 
+            <!-- Liens de Navigation enrichis -->
             <nav class="flex-1 overflow-y-auto mt-4 px-4 space-y-1.5">
                 <a href="{{ route('admin.dashboard') }}" 
                    class="group flex items-center px-4 py-3 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.dashboard') ? 'bg-agraire-600 text-white font-medium shadow-md shadow-agraire-600/10' : 'hover:bg-neutre-800 hover:text-white' }}">
@@ -103,6 +104,13 @@
                     <i class="fas fa-box mr-3 text-lg transition-transform duration-200 group-hover:scale-110 {{ request()->routeIs('admin.products.*') ? 'text-white' : 'text-gray-400 group-hover:text-agraire-600' }}"></i>
                     Produits
                 </a>
+
+                <!-- Alignement avec tes besoins applicatifs récents -->
+                <a href="/admin/ai-logs" 
+                   class="group flex items-center px-4 py-3 rounded-xl transition-all duration-200 {{ request()->is('admin/ai-logs*') ? 'bg-agraire-600 text-white font-medium shadow-md shadow-agraire-600/10' : 'hover:bg-neutre-800 hover:text-white' }}">
+                    <i class="fas fa-robot mr-3 text-lg transition-transform duration-200 group-hover:scale-110 {{ request()->is('admin/ai-logs*') ? 'text-white' : 'text-gray-400 group-hover:text-agraire-600' }}"></i>
+                    Logs IA
+                </a>
             </nav>
 
             <div class="p-4 border-t border-neutre-800 bg-neutre-950/40 text-xs text-center text-gray-500">
@@ -110,8 +118,10 @@
             </div>
         </aside>
 
+        <!-- Overlay Mobile -->
         <div id="sidebar-overlay" class="fixed inset-0 bg-neutre-900/40 backdrop-blur-sm z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
 
+        <!-- Main content area -->
         <div class="flex-1 flex flex-col overflow-hidden">
             
             <header class="bg-white border-b border-gray-200 h-16 flex items-center shrink-0">
