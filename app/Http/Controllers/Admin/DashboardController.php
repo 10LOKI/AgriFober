@@ -1,5 +1,5 @@
- <?php
-
+<?php
+namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Parcel;

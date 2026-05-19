@@ -10,7 +10,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         
         <!-- Card Agriculteurs -->
-        <div class="group bg-white rounded-2xl border border-slate-100 p-6 shadow-sm hover:shadow-xl transition-all duration-300 ease-out hover:-translate-y-1">
+        <div class="relative group bg-white rounded-2xl border border-slate-100 p-6 shadow-sm hover:shadow-xl transition-all duration-300 ease-out hover:-translate-y-1">
             <div class="flex items-center justify-between">
                 <div class="space-y-1.5">
                     <p class="text-sm font-semibold text-slate-500 tracking-wide uppercase text-[11px]">Agriculteurs</p>
@@ -20,11 +20,11 @@
                     <i class="fas fa-users text-xl transition-transform duration-300 group-hover:scale-110"></i>
                 </div>
             </div>
-            <div class="absolute bottom-0 left-6 right-6 h-[2px] bg-slate-100 group-hover:bg-sky-500 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300" />
+            <div class="absolute bottom-0 left-6 right-6 h-[2px] bg-slate-100 group-hover:bg-sky-500 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
         </div>
 
         <!-- Card Parcelles -->
-        <div class="group bg-white rounded-2xl border border-slate-100 p-6 shadow-sm hover:shadow-xl transition-all duration-300 ease-out hover:-translate-y-1">
+        <div class="relative group bg-white rounded-2xl border border-slate-100 p-6 shadow-sm hover:shadow-xl transition-all duration-300 ease-out hover:-translate-y-1">
             <div class="flex items-center justify-between">
                 <div class="space-y-1.5">
                     <p class="text-sm font-semibold text-slate-500 tracking-wide uppercase text-[11px]">Parcelles</p>
@@ -34,11 +34,11 @@
                     <i class="fas fa-seedling text-xl transition-transform duration-300 group-hover:scale-110"></i>
                 </div>
             </div>
-            <div class="absolute bottom-0 left-6 right-6 h-[2px] bg-slate-100 group-hover:bg-emerald-500 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300" />
+            <div class="absolute bottom-0 left-6 right-6 h-[2px] bg-slate-100 group-hover:bg-emerald-500 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
         </div>
 
         <!-- Card Cultures -->
-        <div class="group bg-white rounded-2xl border border-slate-100 p-6 shadow-sm hover:shadow-xl transition-all duration-300 ease-out hover:-translate-y-1">
+        <div class="relative group bg-white rounded-2xl border border-slate-100 p-6 shadow-sm hover:shadow-xl transition-all duration-300 ease-out hover:-translate-y-1">
             <div class="flex items-center justify-between">
                 <div class="space-y-1.5">
                     <p class="text-sm font-semibold text-slate-500 tracking-wide uppercase text-[11px]">Cultures</p>
@@ -48,11 +48,11 @@
                     <i class="fas fa-leaf text-xl transition-transform duration-300 group-hover:scale-110"></i>
                 </div>
             </div>
-            <div class="absolute bottom-0 left-6 right-6 h-[2px] bg-slate-100 group-hover:bg-indigo-500 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300" />
+            <div class="absolute bottom-0 left-6 right-6 h-[2px] bg-slate-100 group-hover:bg-indigo-500 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
         </div>
 
         <!-- Card Produits -->
-        <div class="group bg-white rounded-2xl border border-slate-100 p-6 shadow-sm hover:shadow-xl transition-all duration-300 ease-out hover:-translate-y-1">
+        <div class="relative group bg-white rounded-2xl border border-slate-100 p-6 shadow-sm hover:shadow-xl transition-all duration-300 ease-out hover:-translate-y-1">
             <div class="flex items-center justify-between">
                 <div class="space-y-1.5">
                     <p class="text-sm font-semibold text-slate-500 tracking-wide uppercase text-[11px]">Produits</p>
@@ -62,7 +62,7 @@
                     <i class="fas fa-box text-xl transition-transform duration-300 group-hover:scale-110"></i>
                 </div>
             </div>
-            <div class="absolute bottom-0 left-6 right-6 h-[2px] bg-slate-100 group-hover:bg-amber-500 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300" />
+            <div class="absolute bottom-0 left-6 right-6 h-[2px] bg-slate-100 group-hover:bg-amber-500 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
         </div>
     </div>
 
@@ -127,7 +127,7 @@
                 <div class="space-y-3">
                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Derniers inscrits</h4>
                     <ul class="divide-y divide-slate-100">
-                        @forelse($stats['users'] as $user)
+                        @forelse($stats['recent_users'] as $user)
                             <li class="flex items-center justify-between py-3 text-sm">
                                 <div class="flex items-center space-x-2.5">
                                     <div class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-700">
