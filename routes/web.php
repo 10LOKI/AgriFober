@@ -29,7 +29,7 @@ Route::middleware('web')->group(function () {
 });
 
 // Admin Routes (protected - any authenticated user can access for now)
-Route::middleware(['web', 'auth'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['web', 'auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     
     // Users

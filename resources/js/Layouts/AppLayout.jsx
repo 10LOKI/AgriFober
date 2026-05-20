@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { usePage } from '@inertiajs/react';
 import Sidebar from '@/components/Sidebar';
 import Navbar from '@/components/Navbar';
-import { useState } from 'react';
+
 export default function AppLayout({ children }) {
     const { auth } = usePage().props;
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     return (
         <div className="min-h-screen bg-gray-50/50 text-slate-800 antialiased font-sans flex overflow-hidden">

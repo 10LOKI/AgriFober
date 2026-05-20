@@ -18,7 +18,6 @@ export default function Sidebar({ open, setOpen }) {
         { name: 'Agriculteurs', href: '/admin/users', icon: 'fas fa-users' },
         { name: 'Cultures', href: '/admin/cultures', icon: 'fas fa-seedling' },
         { name: 'Produits', href: '/admin/products', icon: 'fas fa-box' },
-        { name: 'Logs IA', href: '/admin/ai-logs', icon: 'fas fa-robot' },
     ];
 
     return (

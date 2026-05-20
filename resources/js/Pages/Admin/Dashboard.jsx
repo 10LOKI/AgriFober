@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
-import AdminLayout from '@/Layouts/AdminLayout'; // Ajuste le chemin selon ton arborescence
+import AppLayout from '@/Layouts/AppLayout';
 
 export default function Dashboard({ stats }) {
     return (
@@ -16,7 +16,7 @@ export default function Dashboard({ stats }) {
                     <div className="flex items-center justify-between">
                         <div className="space-y-1.5">
                             <p className="text-sm font-semibold text-slate-500 tracking-wide uppercase text-[11px]">Agriculteurs</p>
-                            <p className="text-3xl font-bold text-slate-900 tracking-tight">{stats.total_farmers}</p>
+                            <p className="text-3xl font-bold text-slate-900 tracking-tight">{stats.total_users}</p>
                         </div>
                         <div className="w-12 h-12 rounded-xl flex items-center justify-center border shadow-sm transition-all duration-300 bg-sky-50 text-sky-600 border-sky-100/50">
                             <i className="fas fa-users text-xl transition-transform duration-300 group-hover:scale-110"></i>
@@ -194,7 +194,7 @@ export default function Dashboard({ stats }) {
                     {stats.users_by_region.length > 0 ? (
                         <div className="space-y-3.5">
                             {stats.users_by_region.map((item, index) => {
-                                const percentage = stats.total_farmers > 0 ? (item.count / stats.total_farmers) * 100 : 0;
+                                const percentage = stats.total_users > 0 ? (item.count / stats.total_users) * 100 : 0;
                                 return (
                                     <div key={index}>
                                         <div className="flex justify-between text-sm mb-1.5 font-medium">
@@ -251,6 +251,3 @@ export default function Dashboard({ stats }) {
         </div>
     );
 }
-
-// Persistance automatique du Layout d'administration globale d'Agrifober
-Dashboard.layout = page => <AdminLayout children={page} user={page.props.auth?.user} />;
