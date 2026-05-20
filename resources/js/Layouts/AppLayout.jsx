@@ -1,21 +1,25 @@
 import React from 'react';
 import { usePage } from '@inertiajs/react';
-import AdminLayout from '../Pages/Admin/layout/AdminLayout';
-
+import Sidebar from '@/components/Sidebar';
+import Navbar from '@/components/Navbar';
+import { useState } from 'react';
 export default function AppLayout({ children }) {
-    // Récupération automatique de l'utilisateur connecté depuis les partages Inertia 
-    // afin que le layout parent mette à jour l'avatar et le nom en temps réel.
     const { auth } = usePage().props;
 
     return (
-        <AdminLayout user={auth?.user}>
-            {/* 
-                Wrapper structurel optionnel pour appliquer un effet de fondu (Fade-in) 
-                discret lors du chargement ou du switch entre les différentes pages admin.
-            */}
-            <div className="animate-fadeIn duration-200 ease-out h-full w-full">
-                {children}
+        <div className="min-h-screen bg-gray-50/50 text-slate-800 antialiased font-sans flex overflow-hidden">
+            <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
+            {sidebarOpen && (
+                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
+            )}
+            <div className="flex-1 flex flex-col h-screen overflow-hidden">
+                <Navbar user={auth?.user} toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+                <main className="flex-1 overflow-y-auto p-6 bg-gray-50/50">
+                    <div className="max-w-7xl mx-auto h-full">
+                        {children}
+                    </div>
+                </main>
             </div>
-        </AdminLayout>
+        </div>
     );
 }
