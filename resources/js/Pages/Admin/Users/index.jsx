@@ -23,7 +23,7 @@ export default function UsersIndex() {
 
     const handleReject = (id) => {
         if (confirm('Rejeter cet utilisateur ?')) {
-            router.delete(`/admin/users/${id}/reject`, {
+            router.post(`/admin/users/${id}/reject`, {}, {
                 preserveScroll: true,
                 onSuccess: () => {
                     alert('Utilisateur rejeté');

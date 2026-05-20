@@ -45,7 +45,7 @@ class AuthController extends Controller
             'experience_level' => $validated['experience_level'] ?? null,
             'surface_totale' => $validated['surface_totale'] ?? null,
             'employee_code' => $validated['employee_code'] ?? null,
-            'is_approved' => true, // Auto-approve for direct registration
+            'is_approved' => false,
         ]);
 
         $token = $user->createToken('api-token')->plainTextToken;
@@ -78,13 +78,14 @@ class AuthController extends Controller
             ]);
         }
 
-        $token = $user->createToken('api-token')->plainTextToken;
+        if (!$user->is_approved) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Votre compte est en attente de validation.'
+            ], 403);
+        }
 
-        return response()->json([
-            'user' => $user,
-            'token' => $token,
-            'message' => 'Login successful',
-        ]);
+        $token = $user->createToken('api-token')->plainTextToken;
     }
 
     /**

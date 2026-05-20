@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
-
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Parcel;
@@ -21,18 +19,20 @@ class DashboardController extends Controller
     public function index()
     {
         $stats = [
-            'users'                  => \App\Models\User::count(),
-            'parcels'                => \App\Models\Parcel::count(),
-            'cultures'               => \App\Models\Culture::count(),
-            'products'               => \App\Models\Product::count(),
-            'ai_interactions_today'  => \App\Models\InteractionIA::whereDate('created_at', today())->count(),
-            'pending_users_count'    => \App\Models\User::where('is_approved', false)->count(),
-            'users_by_region'        => \App\Models\User::whereNotNull('region')
+            'users'                  => User::count(),
+            'parcels'                => Parcel::count(),
+            'cultures'               => Culture::count(),
+            'products'               => Product::count(),
+            'ai_interactions_today'  => InteractionIA::whereDate('created_at', today())->count(),
+            'pending_users_count'    => User::where('is_approved', false)->count(),
+            'recent_users'           => User::orderBy('created_at', 'desc')->take(5)->get(),
+            'recent_parcels'         => Parcel::with('user')->orderBy('created_at', 'desc')->take(5)->get(),
+            'users_by_region'        => User::whereNotNull('region')
                 ->select('region', DB::raw('count(*) as count'))
                 ->groupBy('region')
                 ->orderByDesc('count')
                 ->get(),
-            'cultures_by_region'     => \App\Models\Culture::whereNotNull('region')
+            'cultures_by_region'     => Culture::whereNotNull('region')
                 ->select('region', DB::raw('count(*) as count'))
                 ->groupBy('region')
                 ->orderByDesc('count')
