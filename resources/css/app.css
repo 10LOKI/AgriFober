@@ -6,7 +6,125 @@
 @source "../**/*.js";
 @source "../**/*.vue";
 
+/* ─── Design tokens ──────────────────────────────────────────────────────── */
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Backward-compatible color aliases for existing Blade views */
+    --color-agraire-50:  #f0fdf4;
+    --color-agraire-100: #dcfce7;
+    --color-agraire-500: #10b981;
+    --color-agraire-600: #059669;
+    --color-agraire-700: #047857;
+    --color-agraire-800: #065f46;
+    --color-neutre-800:  #1f2937;
+    --color-neutre-900:  #0f2318;
+    --color-neutre-950:  #030712;
+    --color-ambre-50:    #fffbeb;
+    --color-ambre-100:   #fef3c7;
+    --color-ambre-500:   #f59e0b;
+    --color-ambre-600:   #d97706;
+
+    /* Custom animations registered as Tailwind utilities */
+    --animate-float-orb:    float-orb 9s ease-in-out infinite;
+    --animate-float-leaf:   float-leaf 7s ease-in-out infinite;
+    --animate-shimmer:      shimmer 2.2s linear infinite;
+    --animate-slide-up:     slide-up 0.55s ease-out both;
+    --animate-fade-in:      fade-in 0.4s ease-out both;
+    --animate-stagger-1:    slide-up 0.5s 0.06s ease-out both;
+    --animate-stagger-2:    slide-up 0.5s 0.14s ease-out both;
+    --animate-stagger-3:    slide-up 0.5s 0.22s ease-out both;
+    --animate-stagger-4:    slide-up 0.5s 0.30s ease-out both;
+    --animate-glow-pulse:   glow-pulse 2.8s ease-in-out infinite;
+    --animate-spin-slow:    spin 12s linear infinite;
+}
+
+/* ─── Keyframes ───────────────────────────────────────────────────────────── */
+@keyframes float-orb {
+    0%, 100% { transform: translateY(0px) translateX(0px) scale(1); }
+    33%       { transform: translateY(-28px) translateX(16px) scale(1.04); }
+    66%       { transform: translateY(18px) translateX(-12px) scale(0.97); }
+}
+
+@keyframes float-leaf {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50%       { transform: translateY(-22px) rotate(8deg); }
+}
+
+@keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position:  200% center; }
+}
+
+@keyframes slide-up {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes glow-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(5, 150, 105, 0); }
+    50%       { box-shadow: 0 0 18px 4px rgba(5, 150, 105, 0.18); }
+}
+
+/* ─── Global utility extensions ──────────────────────────────────────────── */
+@layer utilities {
+
+    /* Admin content area — subtle dot-grid pattern */
+    .admin-surface {
+        background-color: #f6faf8;
+        background-image: radial-gradient(rgba(5, 150, 105, 0.045) 1px, transparent 1px);
+        background-size: 26px 26px;
+    }
+
+    /* Shimmer gradient button */
+    .btn-agri {
+        background: linear-gradient(90deg, #059669 0%, #0d9488 40%, #059669 80%, #047857 100%);
+        background-size: 200% auto;
+        transition: background-position 0.4s ease, box-shadow 0.25s ease, transform 0.2s ease;
+    }
+    .btn-agri:not(:disabled):hover {
+        background-position: right center;
+        box-shadow: 0 8px 24px rgba(5, 150, 105, 0.30);
+        transform: translateY(-1px);
+    }
+    .btn-agri:not(:disabled):active {
+        transform: translateY(0px);
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.20);
+    }
+
+    /* Field input — enhanced focus glow */
+    .input-agri {
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .input-agri:focus {
+        border-color: #059669;
+        box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.12), 0 1px 3px rgba(0, 0, 0, 0.06);
+        outline: none;
+    }
+
+    /* Card with colored hover glow */
+    .card-hover-sky:hover    { box-shadow: 0 16px 40px rgba(14, 165, 233, 0.08), 0 2px 8px rgba(0,0,0,0.04); }
+    .card-hover-emerald:hover{ box-shadow: 0 16px 40px rgba(5, 150, 105, 0.08), 0 2px 8px rgba(0,0,0,0.04); }
+    .card-hover-indigo:hover { box-shadow: 0 16px 40px rgba(99, 102, 241, 0.08), 0 2px 8px rgba(0,0,0,0.04); }
+    .card-hover-amber:hover  { box-shadow: 0 16px 40px rgba(245, 158, 11, 0.08), 0 2px 8px rgba(0,0,0,0.04); }
+
+    /* Active sidebar item glow */
+    .nav-item-active {
+        background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+        box-shadow: 0 4px 16px rgba(5, 150, 105, 0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+
+    /* Login orb — allow different delay/duration via inline style */
+    .orb-base {
+        border-radius: 9999px;
+        filter: blur(80px);
+        will-change: transform;
+        pointer-events: none;
+    }
 }
