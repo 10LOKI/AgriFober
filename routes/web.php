@@ -8,18 +8,6 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
-// Debug: list test users (temporary)
-Route::get('/debug-users', function() {
-    $users = \App\Models\User::whereIn('email', [
-        'superadmin@agrifober.com',
-        'tech@test.com',
-        'farmer@test.com',
-        'admin@agrifober.com'
-    ])->get(['id','username','email','role','is_approved']);
-    
-    return response()->json($users);
-});
-
 // Public Routes
 Route::middleware('web')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');

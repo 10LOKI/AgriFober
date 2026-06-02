@@ -5,15 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ParcelStoreRequest;
 use App\Http\Requests\ParcelUpdateRequest;
+use App\Http\Resources\ParcelResource;
+use App\Http\Resources\RecommendationResource;
 use App\Models\Parcel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ParcelController extends Controller
 {
-    /**
-     * Display a listing of the user's parcels.
-     */
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -25,32 +24,30 @@ class ParcelController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $parcels
+            'data'    => ParcelResource::collection($parcels),
+            'meta'    => [
+                'current_page' => $parcels->currentPage(),
+                'last_page'    => $parcels->lastPage(),
+                'per_page'     => $parcels->perPage(),
+                'total'        => $parcels->total(),
+            ],
         ]);
     }
 
-    /**
-     * Store a newly created parcel for the authenticated user.
-     * Policy: create
-     */
     public function store(ParcelStoreRequest $request): JsonResponse
     {
         $this->authorize('create', Parcel::class);
-        
+
         $validated = $request->validated();
         $parcel = $request->user()->parcels()->create($validated);
 
         return response()->json([
             'success' => true,
             'message' => 'Parcel created successfully',
-            'data' => $parcel->load('culture')
+            'data'    => new ParcelResource($parcel->load('culture')),
         ], 201);
     }
 
-    /**
-     * Display the specified parcel.
-     * Policy: view
-     */
     public function show(string $id, Request $request): JsonResponse
     {
         $parcel = Parcel::with(['culture', 'interactionIas', 'weatherData' => function ($query) {
@@ -61,14 +58,10 @@ class ParcelController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $parcel
+            'data'    => new ParcelResource($parcel),
         ]);
     }
 
-    /**
-     * Update the specified parcel.
-     * Policy: update
-     */
     public function update(ParcelUpdateRequest $request, string $id): JsonResponse
     {
         $parcel = Parcel::findOrFail($id);
@@ -79,14 +72,10 @@ class ParcelController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Parcel updated successfully',
-            'data' => $parcel->load('culture')
+            'data'    => new ParcelResource($parcel->load('culture')),
         ]);
     }
 
-    /**
-     * Remove the specified parcel.
-     * Policy: delete
-     */
     public function destroy(string $id, Request $request): JsonResponse
     {
         $parcel = Parcel::findOrFail($id);
@@ -96,7 +85,26 @@ class ParcelController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Parcel deleted successfully'
+            'message' => 'Parcel deleted successfully',
+        ]);
+    }
+
+    public function recommendations(string $id, Request $request): JsonResponse
+    {
+        $parcel = Parcel::with('culture.products')->findOrFail($id);
+        $this->authorize('view', $parcel);
+
+        if (!$parcel->culture_id) {
+            return response()->json([
+                'success' => true,
+                'message' => 'No culture assigned to this parcel',
+                'data'    => [],
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data'    => RecommendationResource::collection($parcel->culture->products),
         ]);
     }
 }

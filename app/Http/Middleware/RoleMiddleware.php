@@ -30,7 +30,9 @@ class RoleMiddleware
             return explode('|', $roleString);
         })->filter()->all();
         
-        $hasRole = collect($allRoles)->contains(fn($role) => $user->role === $role);
+        $userRole = $user->role instanceof \BackedEnum ? $user->role->value : $user->role;
+
+        $hasRole = collect($allRoles)->contains(fn($role) => $userRole === $role);
         
         if (!$hasRole) {
             return response()->json([

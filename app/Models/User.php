@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Enums\RoleEnum;
 
 class User extends Authenticatable
 {
@@ -60,43 +60,28 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Get the parcels for the user.
-     */
     public function parcels(): HasMany
     {
         return $this->hasMany(Parcel::class);
     }
 
-    /**
-     * Get the interaction IAs for the user.
-     */
     public function interactionIas(): HasMany
     {
         return $this->hasMany(InteractionIA::class);
     }
 
-    /**
-     * Check if user is an admin.
-     */
     public function isAdmin(): bool
     {
-        return $this->role === RoleEnum::ADMIN->value;
+        return $this->role === RoleEnum::ADMIN;
     }
 
-    /**
-     * Check if user is an agriculteur.
-     */
     public function isAgriculteur(): bool
     {
-        return $this->role === RoleEnum::AGRICULTEUR->value;
+        return $this->role === RoleEnum::AGRICULTEUR;
     }
 
-    /**
-     * Check if user is a technicien.
-     */
     public function isTechnicien(): bool
     {
-        return $this->role === RoleEnum::TECHNICIEN->value;
+        return $this->role === RoleEnum::TECHNICIEN;
     }
 }
