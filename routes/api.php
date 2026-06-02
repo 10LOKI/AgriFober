@@ -20,6 +20,7 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Farmer Profile & Stats (accessible to farmer & admin)
     Route::prefix('farmer')->group(function () {
+        Route::get('/dashboard', [AuthController::class, 'dashboard']);
         Route::get('/profile', [AuthController::class, 'farmerProfile']);
         Route::put('/profile', [AuthController::class, 'updateProfile']);
     });
@@ -34,15 +35,17 @@ Route::middleware('auth:sanctum')->group(function () {
     // Parcels (full CRUD for owner + admin via policies)
     Route::apiResource('parcels', ParcelController::class);
     
-    // Weather routes (access through policies ownership checks)
+    // Weather & recommendations (ownership enforced via ParcelPolicy)
     Route::get('/parcels/{parcel}/weather', [WeatherDataController::class, 'current']);
     Route::get('/parcels/{parcel}/weather/forecast', [WeatherDataController::class, 'forecast']);
+    Route::get('/parcels/{parcel}/recommendations', [ParcelController::class, 'recommendations']);
     
     // IA Chat (all authenticated)
     Route::prefix('ai')->group(function () {
         Route::post('/chat', [InteractionIAController::class, 'chat']);
         Route::get('/history', [InteractionIAController::class, 'history']);
         Route::delete('/history/{id}', [InteractionIAController::class, 'destroy']);
+        Route::post('/history/{id}/feedback', [InteractionIAController::class, 'feedback']);
     });
 
     // Admin routes (full management)

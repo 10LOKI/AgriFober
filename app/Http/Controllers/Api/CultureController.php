@@ -3,43 +3,71 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CultureResource;
 use App\Models\Culture;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CultureController extends Controller
 {
-    /**
-     * Display a listing of all cultures (catalogue).
-     */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $cultures = Culture::with(['products' => function ($query) {
-            $query->select('products.id', 'nom_commercial', 'type');
-        }])->orderBy('nom_commun')->get();
+        $request->validate([
+            'region'   => ['sometimes', 'string', 'max:100'],
+            'type'     => ['sometimes', 'in:fruit,legume,cereale,legumineuse,autre'],
+            'saison'   => ['sometimes', 'in:printemps,ete,automne,hiver,toute_annee'],
+            'search'   => ['sometimes', 'string', 'max:100'],
+            'per_page' => ['sometimes', 'integer', 'min:5', 'max:100'],
+        ]);
+
+        $query = Culture::with(['products' => function ($q) {
+            $q->select('products.id', 'nom_commercial', 'type');
+        }])->orderBy('nom_commun');
+
+        if ($request->filled('region')) {
+            $query->where('region', 'LIKE', '%' . $request->region . '%');
+        }
+
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        if ($request->filled('saison')) {
+            $query->where('saison', $request->saison);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nom_commun', 'LIKE', '%' . $search . '%')
+                  ->orWhere('nom_scientifique', 'LIKE', '%' . $search . '%');
+            });
+        }
+
+        $cultures = $query->paginate($request->integer('per_page', 20));
 
         return response()->json([
             'success' => true,
-            'data' => $cultures
+            'data'    => CultureResource::collection($cultures),
+            'meta'    => [
+                'current_page' => $cultures->currentPage(),
+                'last_page'    => $cultures->lastPage(),
+                'per_page'     => $cultures->perPage(),
+                'total'        => $cultures->total(),
+            ],
         ]);
     }
 
-    /**
-     * Display the specified culture.
-     */
     public function show(string $id): JsonResponse
     {
         $culture = Culture::with('products')->findOrFail($id);
 
         return response()->json([
             'success' => true,
-            'data' => $culture
+            'data'    => new CultureResource($culture),
         ]);
     }
 
-    /**
-     * Store a newly created culture (Admin only).
-     */
     public function store(Request $request): JsonResponse
     {
         return response()->json([
@@ -48,9 +76,6 @@ class CultureController extends Controller
         ], 403);
     }
 
-    /**
-     * Update the specified culture (Admin only).
-     */
     public function update(Request $request, string $id): JsonResponse
     {
         return response()->json([
@@ -59,9 +84,6 @@ class CultureController extends Controller
         ], 403);
     }
 
-    /**
-     * Remove the specified culture (Admin only).
-     */
     public function destroy(string $id): JsonResponse
     {
         return response()->json([

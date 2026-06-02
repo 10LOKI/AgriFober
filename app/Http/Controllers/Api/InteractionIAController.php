@@ -2,70 +2,58 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\InputModeEnum;
+use App\Enums\InteractionTypeEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AiChatRequest;
+use App\Http\Requests\AiFeedbackRequest;
+use App\Http\Resources\InteractionIAResource;
 use App\Models\InteractionIA;
+use App\Models\Parcel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class InteractionIAController extends Controller
 {
-    /**
-     * Chat with AI (simple text).
-     * POST /api/ai/chat
-     */
-    public function chat(Request $request): JsonResponse
+    public function chat(AiChatRequest $request): JsonResponse
     {
-        $request->validate([
-            'message' => ['required', 'string', 'min:3', 'max:2000'],
-            'parcel_id' => ['nullable', 'exists:parcels,id'],
-        ]);
-
-        $user = $request->user();
-        $message = $request->input('message');
+        $user     = $request->user();
+        $message  = $request->input('message');
         $parcelId = $request->input('parcel_id');
 
-        // Check parcel ownership if provided
         if ($parcelId) {
-            $parcel = \App\Models\Parcel::findOrFail($parcelId);
+            $parcel = Parcel::findOrFail($parcelId);
             if ($parcel->user_id !== $user->id && !$user->isAdmin()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Unauthorized access to parcel'
+                    'message' => 'Unauthorized access to parcel',
                 ], 403);
             }
         }
 
-        // Log the interaction (response will be added later with DeepSeek integration)
+        $type      = $request->input('type', InteractionTypeEnum::CHAT->value);
+        $inputMode = $request->input('input_mode', InputModeEnum::TEXT->value);
+
         $interaction = InteractionIA::create([
-            'user_id' => $user->id,
-            'parcel_id' => $parcelId,
-            'question' => $message,
-            'response' => 'AI response will be available soon. DeepSeek API integration pending.',
-            'type' => 'text',
-            'input_mode' => 'text',
-            'tokens_used' => 0,
-            'response_time_ms' => 0,
+            'user_id'       => $user->id,
+            'parcel_id'     => $parcelId,
+            'type'          => $type,
+            'input_mode'    => $inputMode,
+            'prompt_text'   => $message,
+            'response_data' => ['text' => 'AI response pending — DeepSeek integration in progress.'],
+            'tokens_used'   => 0,
+            'engine'        => 'default',
         ]);
 
         return response()->json([
             'success' => true,
-            'data' => [
-                'question' => $message,
-                'response' => $interaction->response,
-                'created_at' => $interaction->created_at,
-                'note' => 'AI integration in progress'
-            ]
-        ]);
+            'data'    => new InteractionIAResource($interaction),
+        ], 201);
     }
 
-    /**
-     * Get user's AI interaction history.
-     * GET /api/ai/history
-     */
     public function history(Request $request): JsonResponse
     {
-        $user = $request->user();
+        $user    = $request->user();
         $history = $user->interactionIas()
             ->with('parcel:id,nom')
             ->orderBy('created_at', 'desc')
@@ -73,24 +61,25 @@ class InteractionIAController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $history
+            'data'    => InteractionIAResource::collection($history),
+            'meta'    => [
+                'current_page' => $history->currentPage(),
+                'last_page'    => $history->lastPage(),
+                'per_page'     => $history->perPage(),
+                'total'        => $history->total(),
+            ],
         ]);
     }
 
-    /**
-     * Delete a specific interaction.
-     * DELETE /api/ai/history/{id}
-     */
     public function destroy(string $id, Request $request): JsonResponse
     {
-        $user = $request->user();
+        $user        = $request->user();
         $interaction = InteractionIA::findOrFail($id);
 
-        // Only owner can delete
         if ($interaction->user_id !== $user->id && !$user->isAdmin()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized'
+                'message' => 'Unauthorized',
             ], 403);
         }
 
@@ -98,7 +87,28 @@ class InteractionIAController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Interaction deleted successfully'
+            'message' => 'Interaction deleted successfully',
+        ]);
+    }
+
+    public function feedback(string $id, AiFeedbackRequest $request): JsonResponse
+    {
+        $user        = $request->user();
+        $interaction = InteractionIA::findOrFail($id);
+
+        if ($interaction->user_id !== $user->id && !$user->isAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized',
+            ], 403);
+        }
+
+        $interaction->update(['feedback_rating' => $request->validated()['rating']]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Feedback recorded',
+            'data'    => new InteractionIAResource($interaction->fresh()),
         ]);
     }
 }
