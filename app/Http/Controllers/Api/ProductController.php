@@ -3,82 +3,95 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductIndexRequest;
+use App\Http\Requests\ProductStoreRequest;
+use App\Http\Requests\ProductUpdateRequest;
+use App\Http\Resources\ProductCollection;
 use App\Http\Resources\ProductResource;
-use App\Models\Product;
+use App\Repositories\Contracts\ProductRepositoryInterface;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function __construct(
+        private readonly ProductRepositoryInterface $products
+    ) {
+    }
+
+    /**
+     * GET /api/products
+     * Paginated, optionally filtered list of products.
+     */
+    public function index(ProductIndexRequest $request): JsonResponse
     {
-        $request->validate([
-            'type'     => ['sometimes', 'in:engrais,pesticide,fongicide,herbicide,biologique'],
-            'search'   => ['sometimes', 'string', 'max:100'],
-            'per_page' => ['sometimes', 'integer', 'min:5', 'max:100'],
-        ]);
+        $validated = $request->validated();
 
-        $query = Product::with(['cultures' => function ($q) {
-            $q->select('cultures.id', 'nom_commun');
-        }])->orderBy('nom_commercial');
+        $products = $this->products->paginate(
+            filters: $validated,
+            perPage: (int) ($validated['per_page'] ?? 20),
+        );
 
-        if ($request->filled('type')) {
-            $query->where('type', $request->type);
-        }
+        return (new ProductCollection($products))
+            ->additional(['success' => true])
+            ->response();
+    }
 
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('nom_commercial', 'LIKE', '%' . $search . '%')
-                  ->orWhere('composant_actif', 'LIKE', '%' . $search . '%');
-            });
-        }
-
-        $products = $query->paginate($request->integer('per_page', 20));
+    /**
+     * GET /api/products/{product}
+     * Detail view of a single product. Missing id yields a clean JSON 404
+     * via the global handler (ModelNotFoundException).
+     */
+    public function show(string $product): JsonResponse
+    {
+        $model = $this->products->findById($product);
 
         return response()->json([
             'success' => true,
-            'data'    => ProductResource::collection($products),
-            'meta'    => [
-                'current_page' => $products->currentPage(),
-                'last_page'    => $products->lastPage(),
-                'per_page'     => $products->perPage(),
-                'total'        => $products->total(),
-            ],
+            'data'    => new ProductResource($model),
         ]);
     }
 
-    public function show(string $id): JsonResponse
+    /**
+     * POST /api/products
+     * Create a product (admin-gated at the route layer).
+     */
+    public function store(ProductStoreRequest $request): JsonResponse
     {
-        $product = Product::with('cultures')->findOrFail($id);
+        $product = $this->products->create($request->validated());
 
         return response()->json([
             'success' => true,
+            'message' => 'Product created successfully.',
             'data'    => new ProductResource($product),
+        ], 201);
+    }
+
+    /**
+     * PUT /api/products/{product}
+     * Update a product (admin-gated).
+     */
+    public function update(ProductUpdateRequest $request, string $product): JsonResponse
+    {
+        $model = $this->products->update($product, $request->validated());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Product updated successfully.',
+            'data'    => new ProductResource($model),
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    /**
+     * DELETE /api/products/{product}
+     * Soft-delete (archive) a product (admin-gated).
+     */
+    public function destroy(string $product): JsonResponse
     {
-        return response()->json([
-            'success' => false,
-            'message' => 'Unauthorized. Admin access required.'
-        ], 403);
-    }
+        $this->products->delete($product);
 
-    public function update(Request $request, string $id): JsonResponse
-    {
         return response()->json([
-            'success' => false,
-            'message' => 'Unauthorized. Admin access required.'
-        ], 403);
-    }
-
-    public function destroy(string $id): JsonResponse
-    {
-        return response()->json([
-            'success' => false,
-            'message' => 'Unauthorized. Admin access required.'
-        ], 403);
+            'success' => true,
+            'message' => 'Product archived successfully.',
+        ]);
     }
 }
