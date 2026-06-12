@@ -44,7 +44,13 @@ class ReportRepository implements ReportRepositoryInterface
 
     public function findForProgram(int|string $id): Report
     {
-        throw new \LogicException('findForProgram() not implemented yet (Endpoint 3).');
+        return $this->model
+            ->newQuery()
+            ->with([
+                'culture:id,nom_commun,type',
+                'parcel:id,nom,surface',
+            ])
+            ->findOrFail($id);
     }
 
     public function paginateHistory(int|string $id, int $perPage = 15): LengthAwarePaginator

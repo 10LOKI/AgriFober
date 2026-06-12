@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReportCollection;
 use App\Http\Resources\ReportDetailResource;
+use App\Http\Resources\ReportProgramResource;
 use App\Models\Report;
 use App\Repositories\Contracts\ReportRepositoryInterface;
 use Illuminate\Http\JsonResponse;
@@ -63,6 +64,24 @@ class ReportController extends Controller
         return response()->json([
             'success' => true,
             'data'    => new ReportDetailResource($model),
+        ]);
+    }
+
+    /**
+     * GET /api/reports/{report}/program
+     * Retrieve the agricultural/fertilization program generated in this report.
+     */
+    public function program(Request $request, string $report): JsonResponse
+    {
+        $model = $this->reports->findForProgram($report);
+
+        if ($denied = $this->guardOwnership($request, $model)) {
+            return $denied;
+        }
+
+        return response()->json([
+            'success' => true,
+            'data'    => new ReportProgramResource($model),
         ]);
     }
 
