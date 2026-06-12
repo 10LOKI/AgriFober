@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class InteractionIAResource extends JsonResource
 {
@@ -16,6 +17,10 @@ class InteractionIAResource extends JsonResource
             'input_mode'     => $this->input_mode?->value,
             'prompt_text'    => $this->prompt_text,
             'response_data'  => $this->response_data,
+            'image_path'     => $this->image_path,
+            'image_url'      => $this->image_path
+                ? Storage::disk('public')->url($this->image_path)
+                : null,
             'tokens_used'    => $this->tokens_used,
             'engine'         => $this->engine,
             'model_version'  => $this->model_version,
