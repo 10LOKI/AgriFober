@@ -55,6 +55,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'surface_totale' => 'decimal:4',
             'last_audit_at' => 'datetime',
+            'is_approved' => 'boolean',
             'role' => \App\Enums\RoleEnum::class,
             'experience_level' => \App\Enums\ExperienceLevelEnum::class,
         ];
