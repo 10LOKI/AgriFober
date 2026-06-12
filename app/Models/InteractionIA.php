@@ -24,6 +24,7 @@ class InteractionIA extends Model
     protected $fillable = [
         'user_id',
         'parcel_id',
+        'conversation_id',
         'type',
         'input_mode',
         'prompt_text',

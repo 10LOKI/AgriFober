@@ -11,10 +11,14 @@ class InteractionIAResource extends JsonResource
     {
         return [
             'id'             => $this->id,
+            'conversation_id' => $this->conversation_id,
             'type'           => $this->type?->value,
             'input_mode'     => $this->input_mode?->value,
             'prompt_text'    => $this->prompt_text,
             'response_data'  => $this->response_data,
+            'tokens_used'    => $this->tokens_used,
+            'engine'         => $this->engine,
+            'model_version'  => $this->model_version,
             'feedback_rating' => $this->feedback_rating,
             'created_at'     => $this->created_at,
             'parcel'         => $this->whenLoaded('parcel', fn() =>

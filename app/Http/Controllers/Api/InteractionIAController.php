@@ -10,20 +10,37 @@ use App\Http\Requests\AiFeedbackRequest;
 use App\Http\Resources\InteractionIAResource;
 use App\Models\InteractionIA;
 use App\Models\Parcel;
+use App\Repositories\Contracts\AiConversationRepositoryInterface;
+use App\Services\DeepSeekService;
+use App\Services\Exceptions\DeepSeekException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class InteractionIAController extends Controller
 {
+    public function __construct(
+        private readonly DeepSeekService $deepseek,
+        private readonly AiConversationRepositoryInterface $conversations,
+    ) {
+    }
+
+    /**
+     * POST /api/ai/chat
+     * Main chatbot turn: validate, replay conversation context, call DeepSeek,
+     * persist the exchange, and return the structured reply.
+     */
     public function chat(AiChatRequest $request): JsonResponse
     {
-        $user     = $request->user();
-        $message  = $request->input('message');
-        $parcelId = $request->input('parcel_id');
+        $user      = $request->user();
+        $message   = $request->input('message');
+        $parcelId  = $request->input('parcel_id');
+        $type      = $request->input('type', InteractionTypeEnum::CHAT->value);
+        $inputMode = $request->input('input_mode', InputModeEnum::TEXT->value);
 
         if ($parcelId) {
             $parcel = Parcel::findOrFail($parcelId);
-            if ($parcel->user_id !== $user->id && !$user->isAdmin()) {
+            if ($parcel->user_id !== $user->id && ! $user->isAdmin()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Unauthorized access to parcel',
@@ -31,24 +48,63 @@ class InteractionIAController extends Controller
             }
         }
 
-        $type      = $request->input('type', InteractionTypeEnum::CHAT->value);
-        $inputMode = $request->input('input_mode', InputModeEnum::TEXT->value);
+        // Resume an existing thread or open a new one.
+        $conversationId = $request->input('conversation_id') ?? (string) Str::uuid();
 
-        $interaction = InteractionIA::create([
-            'user_id'       => $user->id,
-            'parcel_id'     => $parcelId,
-            'type'          => $type,
-            'input_mode'    => $inputMode,
-            'prompt_text'   => $message,
-            'response_data' => ['text' => 'AI response pending — DeepSeek integration in progress.'],
-            'tokens_used'   => 0,
-            'engine'        => 'default',
+        $history = $request->filled('conversation_id')
+            ? $this->conversations->contextMessages($conversationId, $user->id)
+            : [];
+
+        $messages = array_merge(
+            [['role' => 'system', 'content' => $this->systemPrompt()]],
+            $history,
+            [['role' => 'user', 'content' => $message]],
+        );
+
+        try {
+            $result = $this->deepseek->chatCompletion($messages);
+        } catch (DeepSeekException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The AI assistant is temporarily unavailable. Please try again shortly.',
+            ], 503);
+        }
+
+        $interaction = $this->conversations->log([
+            'user_id'         => $user->id,
+            'parcel_id'       => $parcelId,
+            'conversation_id' => $conversationId,
+            'type'            => $type,
+            'input_mode'      => $inputMode,
+            'prompt_text'     => $message,
+            'response_data'   => [
+                'text'  => $result['content'],
+                'usage' => $result['usage'],
+            ],
+            'tokens_used'     => (int) ($result['usage']['total_tokens'] ?? 0),
+            'engine'          => 'deepseek',
+            'model_version'   => $result['model'],
         ]);
 
         return response()->json([
             'success' => true,
-            'data'    => new InteractionIAResource($interaction),
+            'data'    => [
+                'conversation_id' => $conversationId,
+                'reply'           => $result['content'],
+                'interaction'     => new InteractionIAResource($interaction),
+            ],
         ], 201);
+    }
+
+    /**
+     * Base instruction steering the assistant toward the agricultural domain.
+     */
+    private function systemPrompt(): string
+    {
+        return 'Tu es Agriforb, un assistant agricole expert. Réponds de manière '
+            . 'claire, pratique et concise, en français, en t\'appuyant sur les '
+            . 'bonnes pratiques agronomiques. Si une information manque, demande '
+            . 'des précisions plutôt que d\'inventer.';
     }
 
     public function history(Request $request): JsonResponse
