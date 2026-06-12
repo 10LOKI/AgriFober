@@ -76,4 +76,12 @@ class Parcel extends Model
     {
         return $this->hasMany(WeatherData::class);
     }
+
+    /**
+     * Get the reports generated for this parcel.
+     */
+    public function reports()
+    {
+        return $this->hasMany(Report::class);
+    }
 }

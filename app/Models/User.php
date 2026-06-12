@@ -71,6 +71,11 @@ class User extends Authenticatable
         return $this->hasMany(InteractionIA::class);
     }
 
+    public function reports(): HasMany
+    {
+        return $this->hasMany(Report::class);
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === RoleEnum::ADMIN;
