@@ -31,7 +31,15 @@ class ReportRepository implements ReportRepositoryInterface
 
     public function findDetailById(int|string $id): Report
     {
-        throw new \LogicException('findDetailById() not implemented yet (Endpoint 2).');
+        return $this->model
+            ->newQuery()
+            ->with([
+                'user',
+                'parcel.culture',
+                'culture',
+            ])
+            ->withCount('histories')
+            ->findOrFail($id);
     }
 
     public function findForProgram(int|string $id): Report

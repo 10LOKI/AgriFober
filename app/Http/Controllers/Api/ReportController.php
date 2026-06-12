@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReportCollection;
+use App\Http\Resources\ReportDetailResource;
+use App\Models\Report;
 use App\Repositories\Contracts\ReportRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -45,4 +47,41 @@ class ReportController extends Controller
             ->additional(['success' => true])
             ->response();
     }
+
+    /**
+     * GET /api/reports/{report}
+     * Detailed view of a single report with its core relations eager-loaded.
+     */
+    public function show(Request $request, string $report): JsonResponse
+    {
+        $model = $this->reports->findDetailById($report);
+
+        if ($denied = $this->guardOwnership($request, $model)) {
+            return $denied;
+        }
+
+        return response()->json([
+            'success' => true,
+            'data'    => new ReportDetailResource($model),
+        ]);
+    }
+
+    /**
+     * Non-admin callers may only access their own reports. Returns a clean
+     * 403 JSON response when access is denied, or null when allowed.
+     */
+    private function guardOwnership(Request $request, Report $report): ?JsonResponse
+    {
+        $user = $request->user();
+
+        if (! $user->isAdmin() && $report->user_id !== $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to access this report.',
+            ], 403);
+        }
+
+        return null;
+    }
 }
+
