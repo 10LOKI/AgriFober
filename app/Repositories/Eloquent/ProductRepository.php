@@ -35,6 +35,58 @@ class ProductRepository implements ProductRepositoryInterface
             ->findOrFail($id);
     }
 
+    public function create(array $data): Product
+    {
+        $cultureIds = $this->pullCultureIds($data);
+
+        $product = $this->model->newQuery()->create($data);
+
+        if ($cultureIds !== null) {
+            $product->cultures()->sync($cultureIds);
+        }
+
+        return $product->load('cultures');
+    }
+
+    public function update(int|string $id, array $data): Product
+    {
+        $product    = $this->model->newQuery()->findOrFail($id);
+        $cultureIds = $this->pullCultureIds($data);
+
+        $product->update($data);
+
+        if ($cultureIds !== null) {
+            $product->cultures()->sync($cultureIds);
+        }
+
+        return $product->load('cultures');
+    }
+
+    public function delete(int|string $id): bool
+    {
+        $product = $this->model->newQuery()->findOrFail($id);
+
+        return (bool) $product->delete();
+    }
+
+    /**
+     * Extract and remove the optional culture_ids key from the payload.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<int, int>|null
+     */
+    private function pullCultureIds(array &$data): ?array
+    {
+        if (! array_key_exists('culture_ids', $data)) {
+            return null;
+        }
+
+        $ids = $data['culture_ids'];
+        unset($data['culture_ids']);
+
+        return is_array($ids) ? array_map('intval', $ids) : [];
+    }
+
     /**
      * Apply the supported list filters to the query.
      *
