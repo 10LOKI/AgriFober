@@ -51,6 +51,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // IA Chat (all authenticated)
     Route::prefix('ai')->group(function () {
         Route::post('/chat', [InteractionIAController::class, 'chat']);
+        Route::post('/explain', [InteractionIAController::class, 'explain']);
         Route::get('/history', [InteractionIAController::class, 'history']);
         Route::delete('/history/{id}', [InteractionIAController::class, 'destroy']);
         Route::post('/history/{id}/feedback', [InteractionIAController::class, 'feedback']);

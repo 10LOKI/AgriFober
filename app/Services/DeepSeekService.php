@@ -88,6 +88,63 @@ class DeepSeekService
     }
 
     /**
+     * Produce a structured, analytical explanation of an agricultural subject
+     * (diagnostic, report anomaly, metric...). A dedicated system prompt forces
+     * DeepSeek to answer as a single JSON object with a fixed schema.
+     *
+     * @param  string  $subject  Free-text description of what to explain.
+     * @param  array<string, mixed>  $data  Optional structured context (metrics, anomaly payload).
+     * @return array{structured: array<string, mixed>|null, content: string, model: string, usage: array<string, mixed>, raw: array<string, mixed>}
+     *
+     * @throws DeepSeekException
+     */
+    public function explain(string $subject, array $data = []): array
+    {
+        $userContent = $subject;
+
+        if ($data !== []) {
+            $userContent .= "\n\nDonnées à analyser:\n" . json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        }
+
+        $messages = [
+            ['role' => 'system', 'content' => $this->explanationSystemPrompt()],
+            ['role' => 'user', 'content' => $userContent],
+        ];
+
+        $result = $this->chatCompletion($messages, [
+            'temperature'     => 0.3,
+            'response_format' => ['type' => 'json_object'],
+        ]);
+
+        $structured = json_decode($result['content'], true);
+
+        return [
+            'structured' => is_array($structured) ? $structured : null,
+            'content'    => $result['content'],
+            'model'      => $result['model'],
+            'usage'      => $result['usage'],
+            'raw'        => $result['raw'],
+        ];
+    }
+
+    /**
+     * Analytical system prompt: pins the assistant to a strict JSON schema so
+     * the breakdown is machine-parseable for the frontend.
+     */
+    private function explanationSystemPrompt(): string
+    {
+        return 'Tu es Agriforb, un agronome analyste. Analyse le sujet fourni et '
+            . 'réponds UNIQUEMENT avec un objet JSON valide, sans texte autour, '
+            . 'respectant exactement ce schéma: {'
+            . '"resume": string, '
+            . '"analyse": string, '
+            . '"causes_probables": string[], '
+            . '"recommandations": string[], '
+            . '"niveau_confiance": "faible"|"moyen"|"eleve"}. '
+            . 'Rédige les valeurs en français, de façon claire et actionnable.';
+    }
+
+    /**
      * Build the pre-configured HTTP client (auth, base URL, timeout, retry).
      */
     private function client(): PendingRequest

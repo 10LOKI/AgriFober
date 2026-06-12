@@ -6,6 +6,7 @@ use App\Enums\InputModeEnum;
 use App\Enums\InteractionTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AiChatRequest;
+use App\Http\Requests\AiExplainRequest;
 use App\Http\Requests\AiFeedbackRequest;
 use App\Http\Resources\InteractionIAResource;
 use App\Models\InteractionIA;
@@ -91,6 +92,67 @@ class InteractionIAController extends Controller
             'data'    => [
                 'conversation_id' => $conversationId,
                 'reply'           => $result['content'],
+                'interaction'     => new InteractionIAResource($interaction),
+            ],
+        ], 201);
+    }
+
+    /**
+     * POST /api/ai/explain
+     * Structured analytical breakdown of a diagnostic / report anomaly. The
+     * dedicated analytical prompt + JSON schema live inside DeepSeekService.
+     */
+    public function explain(AiExplainRequest $request): JsonResponse
+    {
+        $user      = $request->user();
+        $subject   = $request->input('subject');
+        $data      = $request->input('data', []);
+        $parcelId  = $request->input('parcel_id');
+
+        if ($parcelId) {
+            $parcel = Parcel::findOrFail($parcelId);
+            if ($parcel->user_id !== $user->id && ! $user->isAdmin()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized access to parcel',
+                ], 403);
+            }
+        }
+
+        $conversationId = $request->input('conversation_id') ?? (string) Str::uuid();
+
+        try {
+            $result = $this->deepseek->explain($subject, is_array($data) ? $data : []);
+        } catch (DeepSeekException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The AI assistant is temporarily unavailable. Please try again shortly.',
+            ], 503);
+        }
+
+        $interaction = $this->conversations->log([
+            'user_id'         => $user->id,
+            'parcel_id'       => $parcelId,
+            'conversation_id' => $conversationId,
+            'type'            => InteractionTypeEnum::DIAGNOSTIC->value,
+            'input_mode'      => InputModeEnum::TEXT->value,
+            'prompt_text'     => $subject,
+            'response_data'   => [
+                'text'       => $result['content'],
+                'structured' => $result['structured'],
+                'usage'      => $result['usage'],
+            ],
+            'tokens_used'     => (int) ($result['usage']['total_tokens'] ?? 0),
+            'engine'          => 'deepseek',
+            'model_version'   => $result['model'],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'data'    => [
+                'conversation_id' => $conversationId,
+                'explanation'     => $result['structured'],
+                'raw'             => $result['structured'] === null ? $result['content'] : null,
                 'interaction'     => new InteractionIAResource($interaction),
             ],
         ], 201);
