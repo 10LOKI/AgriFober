@@ -4,9 +4,11 @@ namespace App\Providers;
 
 use App\Repositories\Contracts\AiConversationRepositoryInterface;
 use App\Repositories\Contracts\CultureRepositoryInterface;
+use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Contracts\ReportRepositoryInterface;
 use App\Repositories\Eloquent\AiConversationRepository;
 use App\Repositories\Eloquent\CultureRepository;
+use App\Repositories\Eloquent\ProductRepository;
 use App\Repositories\Eloquent\ReportRepository;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,6 +23,7 @@ class RepositoryServiceProvider extends ServiceProvider
         CultureRepositoryInterface::class => CultureRepository::class,
         ReportRepositoryInterface::class => ReportRepository::class,
         AiConversationRepositoryInterface::class => AiConversationRepository::class,
+        ProductRepositoryInterface::class => ProductRepository::class,
     ];
 
     /**
