@@ -29,6 +29,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Catalogue (read-only for all authenticated roles)
     // Reports (Rapports) — built incrementally
     Route::get('/reports', [ReportController::class, 'index']);
+    Route::get('/reports/{report}/program', [ReportController::class, 'program']);
+    Route::get('/reports/{report}/history', [ReportController::class, 'history']);
+    Route::get('/reports/{report}', [ReportController::class, 'show']);
 
     Route::get('/cultures', [CultureController::class, 'index']);
     Route::get('/cultures/{culture}/associated', [CultureController::class, 'associated']);

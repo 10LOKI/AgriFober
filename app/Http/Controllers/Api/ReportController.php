@@ -4,6 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReportCollection;
+use App\Http\Resources\ReportDetailResource;
+use App\Http\Resources\ReportHistoryCollection;
+use App\Http\Resources\ReportProgramResource;
+use App\Models\Report;
 use App\Repositories\Contracts\ReportRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -45,4 +49,86 @@ class ReportController extends Controller
             ->additional(['success' => true])
             ->response();
     }
+
+    /**
+     * GET /api/reports/{report}
+     * Detailed view of a single report with its core relations eager-loaded.
+     */
+    public function show(Request $request, string $report): JsonResponse
+    {
+        $model = $this->reports->findDetailById($report);
+
+        if ($denied = $this->guardOwnership($request, $model)) {
+            return $denied;
+        }
+
+        return response()->json([
+            'success' => true,
+            'data'    => new ReportDetailResource($model),
+        ]);
+    }
+
+    /**
+     * GET /api/reports/{report}/program
+     * Retrieve the agricultural/fertilization program generated in this report.
+     */
+    public function program(Request $request, string $report): JsonResponse
+    {
+        $model = $this->reports->findForProgram($report);
+
+        if ($denied = $this->guardOwnership($request, $model)) {
+            return $denied;
+        }
+
+        return response()->json([
+            'success' => true,
+            'data'    => new ReportProgramResource($model),
+        ]);
+    }
+
+    /**
+     * GET /api/reports/{report}/history
+     * Paginated change log (history) linked to a report.
+     */
+    public function history(Request $request, string $report): JsonResponse
+    {
+        $validated = $request->validate([
+            'per_page' => ['sometimes', 'integer', 'min:5', 'max:100'],
+        ]);
+
+        // Load the report first for existence (404) + ownership (403).
+        $model = $this->reports->findDetailById($report);
+
+        if ($denied = $this->guardOwnership($request, $model)) {
+            return $denied;
+        }
+
+        $histories = $this->reports->paginateHistory(
+            id: $model->id,
+            perPage: (int) ($validated['per_page'] ?? 15),
+        );
+
+        return (new ReportHistoryCollection($histories))
+            ->additional(['success' => true])
+            ->response();
+    }
+
+    /**
+     * Non-admin callers may only access their own reports. Returns a clean
+     * 403 JSON response when access is denied, or null when allowed.
+     */
+    private function guardOwnership(Request $request, Report $report): ?JsonResponse
+    {
+        $user = $request->user();
+
+        if (! $user->isAdmin() && $report->user_id !== $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to access this report.',
+            ], 403);
+        }
+
+        return null;
+    }
 }
+
