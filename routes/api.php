@@ -27,6 +27,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Catalogue (read-only for all authenticated roles)
     Route::get('/cultures', [CultureController::class, 'index']);
+    Route::get('/cultures/{culture}/associated', [CultureController::class, 'associated']);
     Route::get('/cultures/{culture}', [CultureController::class, 'show']);
     
     Route::get('/products', [ProductController::class, 'index']);

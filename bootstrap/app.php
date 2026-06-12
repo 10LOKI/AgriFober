@@ -1,8 +1,11 @@
 <?php
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -21,7 +24,27 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withProviders([
         \App\Providers\AuthServiceProvider::class,
+        \App\Providers\RepositoryServiceProvider::class,
     ])
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // Return clean JSON for missing models / routes on API requests
+        // instead of an HTML stack trace. Laravel's prepareException()
+        // wraps ModelNotFoundException in a NotFoundHttpException, so the
+        // original model exception is read back off getPrevious().
+        $exceptions->render(function (NotFoundHttpException $e, Request $request) {
+            if (! $request->is('api/*') && ! $request->expectsJson()) {
+                return null;
+            }
+
+            $previous = $e->getPrevious();
+
+            $message = $previous instanceof ModelNotFoundException
+                ? class_basename($previous->getModel()) . ' not found.'
+                : 'Resource not found.';
+
+            return response()->json([
+                'success' => false,
+                'message' => $message,
+            ], 404);
+        });
     })->create();
