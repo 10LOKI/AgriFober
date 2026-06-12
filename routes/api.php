@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CultureController;
 use App\Http\Controllers\Api\InteractionIAController;
 use App\Http\Controllers\Api\ParcelController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\WeatherDataController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,9 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Catalogue (read-only for all authenticated roles)
+    // Reports (Rapports) — built incrementally
+    Route::get('/reports', [ReportController::class, 'index']);
+
     Route::get('/cultures', [CultureController::class, 'index']);
     Route::get('/cultures/{culture}/associated', [CultureController::class, 'associated']);
     Route::get('/cultures/{culture}', [CultureController::class, 'show']);

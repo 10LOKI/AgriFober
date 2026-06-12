@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Repositories\Contracts\CultureRepositoryInterface;
+use App\Repositories\Contracts\ReportRepositoryInterface;
 use App\Repositories\Eloquent\CultureRepository;
+use App\Repositories\Eloquent\ReportRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -15,6 +17,7 @@ class RepositoryServiceProvider extends ServiceProvider
      */
     private array $repositories = [
         CultureRepositoryInterface::class => CultureRepository::class,
+        ReportRepositoryInterface::class => ReportRepository::class,
     ];
 
     /**
