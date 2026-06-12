@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReportCollection;
 use App\Http\Resources\ReportDetailResource;
+use App\Http\Resources\ReportHistoryCollection;
 use App\Http\Resources\ReportProgramResource;
 use App\Models\Report;
 use App\Repositories\Contracts\ReportRepositoryInterface;
@@ -83,6 +84,33 @@ class ReportController extends Controller
             'success' => true,
             'data'    => new ReportProgramResource($model),
         ]);
+    }
+
+    /**
+     * GET /api/reports/{report}/history
+     * Paginated change log (history) linked to a report.
+     */
+    public function history(Request $request, string $report): JsonResponse
+    {
+        $validated = $request->validate([
+            'per_page' => ['sometimes', 'integer', 'min:5', 'max:100'],
+        ]);
+
+        // Load the report first for existence (404) + ownership (403).
+        $model = $this->reports->findDetailById($report);
+
+        if ($denied = $this->guardOwnership($request, $model)) {
+            return $denied;
+        }
+
+        $histories = $this->reports->paginateHistory(
+            id: $model->id,
+            perPage: (int) ($validated['per_page'] ?? 15),
+        );
+
+        return (new ReportHistoryCollection($histories))
+            ->additional(['success' => true])
+            ->response();
     }
 
     /**

@@ -55,7 +55,13 @@ class ReportRepository implements ReportRepositoryInterface
 
     public function paginateHistory(int|string $id, int $perPage = 15): LengthAwarePaginator
     {
-        throw new \LogicException('paginateHistory() not implemented yet (Endpoint 4).');
+        $report = $this->model->newQuery()->findOrFail($id);
+
+        return $report->histories()
+            ->with('user:id,name,email')
+            ->latest()
+            ->latest('id')
+            ->paginate($perPage);
     }
 
     /**

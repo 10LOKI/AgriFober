@@ -30,6 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Reports (Rapports) — built incrementally
     Route::get('/reports', [ReportController::class, 'index']);
     Route::get('/reports/{report}/program', [ReportController::class, 'program']);
+    Route::get('/reports/{report}/history', [ReportController::class, 'history']);
     Route::get('/reports/{report}', [ReportController::class, 'show']);
 
     Route::get('/cultures', [CultureController::class, 'index']);
