@@ -22,6 +22,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _region = TextEditingController();
   String? _experienceLevel;
   bool _loading = false;
+  bool _obscure = true;
   String? _error;
   Map<String, List<String>>? _fieldErrors;
 
@@ -86,11 +87,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.red.shade50,
-                        borderRadius: BorderRadius.circular(8),
+                        color: Theme.of(context).colorScheme.errorContainer,
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Text(_error!,
-                          style: TextStyle(color: Colors.red.shade700)),
+                      child: Text(
+                        _error!,
+                        style: TextStyle(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onErrorContainer,
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 16),
                   ],
@@ -98,6 +105,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     controller: _username,
                     decoration: InputDecoration(
                       labelText: 'Username',
+                      prefixIcon: const Icon(Icons.alternate_email),
                       errorText: _serverError('username'),
                     ),
                     validator: (v) =>
@@ -108,6 +116,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     controller: _name,
                     decoration: InputDecoration(
                       labelText: 'Full name',
+                      prefixIcon: const Icon(Icons.person_outline),
                       errorText: _serverError('name'),
                     ),
                     validator: (v) =>
@@ -119,6 +128,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       labelText: 'Email',
+                      prefixIcon: const Icon(Icons.mail_outline),
                       errorText: _serverError('email'),
                     ),
                     validator: (v) =>
@@ -127,9 +137,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _password,
-                    obscureText: true,
+                    obscureText: _obscure,
                     decoration: InputDecoration(
                       labelText: 'Password',
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      suffixIcon: IconButton(
+                        icon: Icon(_obscure
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined),
+                        onPressed: () =>
+                            setState(() => _obscure = !_obscure),
+                      ),
                       errorText: _serverError('password'),
                     ),
                     validator: (v) => (v == null || v.length < 8)
@@ -139,9 +157,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _passwordConfirm,
-                    obscureText: true,
-                    decoration:
-                        const InputDecoration(labelText: 'Confirm password'),
+                    obscureText: _obscure,
+                    decoration: const InputDecoration(
+                      labelText: 'Confirm password',
+                      prefixIcon: Icon(Icons.lock_outline),
+                    ),
                     validator: (v) =>
                         v != _password.text ? 'Passwords do not match' : null,
                   ),
@@ -149,13 +169,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   TextFormField(
                     controller: _region,
                     decoration: const InputDecoration(
-                        labelText: 'Region (optional)'),
+                      labelText: 'Region (optional)',
+                      prefixIcon: Icon(Icons.place_outlined),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
-                    value: _experienceLevel,
+                    initialValue: _experienceLevel,
                     decoration: const InputDecoration(
-                        labelText: 'Experience level (optional)'),
+                      labelText: 'Experience level (optional)',
+                      prefixIcon: Icon(Icons.school_outlined),
+                    ),
                     items: const [
                       DropdownMenuItem(
                           value: 'debutant', child: Text('Débutant')),

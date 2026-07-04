@@ -191,7 +191,7 @@ class _ParcelFormScreenState extends ConsumerState<ParcelFormScreen> {
                   loading: () => const LinearProgressIndicator(),
                   error: (_, __) => const Text('Could not load cultures.'),
                   data: (cultures) => DropdownButtonFormField<int?>(
-                    value: _cultureId,
+                    initialValue: _cultureId,
                     decoration: InputDecoration(
                       labelText: 'Culture (optional)',
                       errorText: _serverError('culture_id'),
@@ -209,7 +209,7 @@ class _ParcelFormScreenState extends ConsumerState<ParcelFormScreen> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  value: _status,
+                  initialValue: _status,
                   decoration: InputDecoration(
                     labelText: 'Status',
                     errorText: _serverError('status'),

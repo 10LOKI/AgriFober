@@ -4,6 +4,7 @@ import '../../core/api_client.dart';
 import '../../core/providers.dart';
 import '../../models/culture.dart';
 import '../../models/parcel.dart';
+import '../../models/recommendation.dart';
 
 final parcelRepositoryProvider = Provider<ParcelRepository>((ref) {
   return ParcelRepository(ref.watch(apiClientProvider));
@@ -38,6 +39,14 @@ class ParcelRepository {
 
   Future<void> delete(int id) => _api.delete('/parcels/$id');
 
+  /// Products recommended for the parcel's culture.
+  Future<List<Recommendation>> recommendations(int id) async {
+    final data = await _api.get('/parcels/$id/recommendations');
+    return (data as List)
+        .map((e) => Recommendation.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
   /// Catalogue for the culture dropdown in the parcel form.
   Future<List<Culture>> cultures() async {
     final data = await _api.get('/cultures', query: {'per_page': 100});
@@ -58,4 +67,9 @@ final parcelProvider =
 
 final culturesProvider = FutureProvider.autoDispose<List<Culture>>((ref) {
   return ref.watch(parcelRepositoryProvider).cultures();
+});
+
+final recommendationsProvider = FutureProvider.autoDispose
+    .family<List<Recommendation>, int>((ref, id) {
+  return ref.watch(parcelRepositoryProvider).recommendations(id);
 });

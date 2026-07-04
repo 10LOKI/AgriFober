@@ -17,6 +17,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _email = TextEditingController();
   final _password = TextEditingController();
   bool _loading = false;
+  bool _obscure = true;
   String? _error;
 
   @override
@@ -49,6 +50,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -60,34 +62,89 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text('Agrifober',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineMedium),
+                  Container(
+                    alignment: Alignment.center,
+                    child: Container(
+                      padding: const EdgeInsets.all(18),
+                      decoration: BoxDecoration(
+                        color: scheme.primaryContainer.withValues(alpha: 0.6),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(Icons.agriculture,
+                          size: 44, color: scheme.primary),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Agrifober',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineMedium
+                        ?.copyWith(fontWeight: FontWeight.w800),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Your farm, in your pocket',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: Theme.of(context).hintColor),
+                  ),
                   const SizedBox(height: 32),
                   if (_error != null) ...[
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.red.shade50,
-                        borderRadius: BorderRadius.circular(8),
+                        color: scheme.errorContainer,
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Text(_error!,
-                          style: TextStyle(color: Colors.red.shade700)),
+                      child: Row(
+                        children: [
+                          Icon(Icons.error_outline,
+                              size: 18, color: scheme.onErrorContainer),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              _error!,
+                              style:
+                                  TextStyle(color: scheme.onErrorContainer),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 16),
                   ],
                   TextFormField(
                     controller: _email,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(labelText: 'Email'),
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      prefixIcon: Icon(Icons.mail_outline),
+                    ),
                     validator: (v) =>
                         (v == null || !v.contains('@')) ? 'Invalid email' : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _password,
-                    obscureText: true,
-                    decoration: const InputDecoration(labelText: 'Password'),
+                    obscureText: _obscure,
+                    textInputAction: TextInputAction.done,
+                    onFieldSubmitted: (_) => _loading ? null : _submit(),
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      suffixIcon: IconButton(
+                        icon: Icon(_obscure
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined),
+                        onPressed: () =>
+                            setState(() => _obscure = !_obscure),
+                      ),
+                    ),
                     validator: (v) =>
                         (v == null || v.isEmpty) ? 'Required' : null,
                   ),
