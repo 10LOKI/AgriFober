@@ -1,0 +1,35 @@
+name: agrifober_mobile
+description: Agrifober mobile client (Flutter) for the Laravel REST API.
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # State management
+  flutter_riverpod: ^2.5.1
+
+  # Networking
+  dio: ^5.7.0
+
+  # Secure token storage
+  flutter_secure_storage: ^9.2.2
+
+  # Routing
+  go_router: ^14.2.0
+
+  # Value equality for models
+  equatable: ^2.0.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
