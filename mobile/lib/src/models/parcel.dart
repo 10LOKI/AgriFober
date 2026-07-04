@@ -1,3 +1,4 @@
+import '../core/json.dart';
 import 'package:equatable/equatable.dart';
 
 import 'culture.dart';
@@ -34,13 +35,13 @@ class Parcel extends Equatable {
     return Parcel(
       id: json['id'] as int,
       nom: json['nom'] as String? ?? '',
-      surface: (json['surface'] as num?)?.toDouble(),
+      surface: asDouble(json['surface']),
       status: json['status'] as String?,
-      healthScore: (json['health_score'] as num?)?.toDouble(),
+      healthScore: asDouble(json['health_score']),
       datePlantation: _date(json['date_plantation']),
       dateRecolteEstimee: _date(json['date_recolte_estimee']),
-      latitude: (json['latitude'] as num?)?.toDouble(),
-      longitude: (json['longitude'] as num?)?.toDouble(),
+      latitude: asDouble(json['latitude']),
+      longitude: asDouble(json['longitude']),
       createdAt: _date(json['created_at']),
       culture: json['culture'] is Map<String, dynamic>
           ? Culture.fromJson(json['culture'] as Map<String, dynamic>)

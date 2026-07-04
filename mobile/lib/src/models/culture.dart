@@ -1,3 +1,4 @@
+import '../core/json.dart';
 import 'package:equatable/equatable.dart';
 
 import 'product.dart';
@@ -45,11 +46,11 @@ class Culture extends Equatable {
       saison: json['saison'] as String?,
       region: json['region'] as String?,
       soilType: json['soil_type'] as String?,
-      phSolMin: (json['ph_sol_min'] as num?)?.toDouble(),
-      phSolMax: (json['ph_sol_max'] as num?)?.toDouble(),
-      tempMin: (json['temp_min'] as num?)?.toDouble(),
-      tempMax: (json['temp_max'] as num?)?.toDouble(),
-      besoinEauCycle: (json['besoin_eau_cycle'] as num?)?.toDouble(),
+      phSolMin: asDouble(json['ph_sol_min']),
+      phSolMax: asDouble(json['ph_sol_max']),
+      tempMin: asDouble(json['temp_min']),
+      tempMax: asDouble(json['temp_max']),
+      besoinEauCycle: asDouble(json['besoin_eau_cycle']),
       conseils: json['conseils'] as String?,
       products: (json['products'] as List?)
               ?.map((e) => Product.fromJson(e as Map<String, dynamic>))

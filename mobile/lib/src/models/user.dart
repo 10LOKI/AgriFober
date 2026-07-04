@@ -1,3 +1,4 @@
+import '../core/json.dart';
 import 'package:equatable/equatable.dart';
 
 /// Mirrors App\Http\Resources\UserResource.
@@ -39,7 +40,7 @@ class User extends Equatable {
       role: json['role'] as String?,
       region: json['region'] as String?,
       experienceLevel: json['experience_level'] as String?,
-      surfaceTotale: (json['surface_totale'] as num?)?.toDouble(),
+      surfaceTotale: asDouble(json['surface_totale']),
       isApproved: json['is_approved'] as bool? ?? false,
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'].toString())

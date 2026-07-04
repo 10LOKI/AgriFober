@@ -1,3 +1,4 @@
+import '../core/json.dart';
 import 'package:equatable/equatable.dart';
 
 /// Mirrors App\Http\Resources\RecommendationResource: a product recommended
@@ -29,13 +30,13 @@ class Recommendation extends Equatable {
 
   factory Recommendation.fromJson(Map<String, dynamic> json) {
     return Recommendation(
-      id: (json['id'] as num).toInt(),
+      id: asInt(json['id'])!,
       nomCommercial: json['nom_commercial'] as String? ?? '',
       type: json['type'] as String?,
       description: json['description'] as String?,
       composantActif: json['composant_actif'] as String?,
       dosageRecommande: json['dosage_recommande'] as String?,
-      delaiAvantRecolte: (json['delai_avant_recolte'] as num?)?.toInt(),
+      delaiAvantRecolte: asInt(json['delai_avant_recolte']),
       safetyInstructions: json['safety_instructions'] as String?,
       dosageSpecifique: json['dosage_specifique'] as String?,
       notes: json['notes'] as String?,

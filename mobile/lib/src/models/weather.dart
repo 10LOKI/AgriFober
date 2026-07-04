@@ -1,3 +1,4 @@
+import '../core/json.dart';
 import 'package:equatable/equatable.dart';
 
 /// Latest reading for a parcel, from GET /parcels/{id}/weather.
@@ -25,10 +26,10 @@ class CurrentWeather extends Equatable {
 
   factory CurrentWeather.fromJson(Map<String, dynamic> json) {
     return CurrentWeather(
-      temp: (json['temp'] as num?)?.toDouble(),
-      humidity: (json['humidity'] as num?)?.toDouble(),
-      precipitation: (json['precipitation'] as num?)?.toDouble(),
-      windSpeed: (json['wind_speed'] as num?)?.toDouble(),
+      temp: asDouble(json['temp']),
+      humidity: asDouble(json['humidity']),
+      precipitation: asDouble(json['precipitation']),
+      windSpeed: asDouble(json['wind_speed']),
       condition: json['condition'] as String?,
       source: json['source'] as String?,
       recordedAt: json['recorded_at'] != null
@@ -63,10 +64,10 @@ class ForecastDay extends Equatable {
   factory ForecastDay.fromJson(Map<String, dynamic> json) {
     return ForecastDay(
       date: json['date'] as String? ?? '',
-      tempMax: (json['temp_max'] as num?)?.toDouble(),
-      tempMin: (json['temp_min'] as num?)?.toDouble(),
-      humidity: (json['humidity'] as num?)?.toDouble(),
-      precipitationChance: (json['precipitation_chance'] as num?)?.toInt(),
+      tempMax: asDouble(json['temp_max']),
+      tempMin: asDouble(json['temp_min']),
+      humidity: asDouble(json['humidity']),
+      precipitationChance: asInt(json['precipitation_chance']),
       condition: json['condition'] as String?,
     );
   }

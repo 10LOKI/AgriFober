@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api_client.dart';
+import '../../core/json.dart';
 import '../../core/providers.dart';
 import '../../models/parcel.dart';
 
@@ -47,12 +48,12 @@ class DashboardStats {
 
   factory DashboardStats.fromJson(Map<String, dynamic> json) {
     return DashboardStats(
-      totalParcels: (json['total_parcels'] as num?)?.toInt() ?? 0,
-      activeParcels: (json['active_parcels'] as num?)?.toInt() ?? 0,
-      totalSurfaceHa: (json['total_surface_ha'] as num?)?.toDouble() ?? 0,
-      culturesCultivated: (json['cultures_cultivated'] as num?)?.toInt() ?? 0,
-      avgHealthScore: (json['avg_health_score'] as num?)?.toDouble(),
-      aiInteractionsTotal: (json['ai_interactions_total'] as num?)?.toInt() ?? 0,
+      totalParcels: asInt(json['total_parcels']) ?? 0,
+      activeParcels: asInt(json['active_parcels']) ?? 0,
+      totalSurfaceHa: asDouble(json['total_surface_ha']) ?? 0,
+      culturesCultivated: asInt(json['cultures_cultivated']) ?? 0,
+      avgHealthScore: asDouble(json['avg_health_score']),
+      aiInteractionsTotal: asInt(json['ai_interactions_total']) ?? 0,
     );
   }
 }

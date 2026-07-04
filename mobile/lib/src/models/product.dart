@@ -1,3 +1,4 @@
+import '../core/json.dart';
 import 'package:equatable/equatable.dart';
 
 /// Mirrors App\Http\Resources\ProductResource.
@@ -42,7 +43,7 @@ class Product extends Equatable {
       description: json['description'] as String?,
       composantActif: json['composant_actif'] as String?,
       dosageRecommande: json['dosage_recommande'] as String?,
-      delaiAvantRecolte: (json['delai_avant_recolte'] as num?)?.toInt(),
+      delaiAvantRecolte: asInt(json['delai_avant_recolte']),
       type: json['type'] as String?,
       avantages: json['avantages'] as String?,
       usageMethod: json['usage_method'] as String?,

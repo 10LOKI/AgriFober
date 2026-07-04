@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api_client.dart';
+import '../../core/json.dart';
 import '../../core/providers.dart';
 import '../../models/user.dart';
 
@@ -22,10 +23,10 @@ class FarmerProfile {
     final stats = json['statistics'] as Map<String, dynamic>? ?? const {};
     return FarmerProfile(
       user: User.fromJson(json['profile'] as Map<String, dynamic>),
-      totalParcels: (stats['total_parcels'] as num?)?.toInt() ?? 0,
-      totalSurfaceHa: (stats['total_surface_ha'] as num?)?.toDouble() ?? 0,
+      totalParcels: asInt(stats['total_parcels']) ?? 0,
+      totalSurfaceHa: asDouble(stats['total_surface_ha']) ?? 0,
       culturesCultivated:
-          (stats['cultures_cultivated'] as num?)?.toInt() ?? 0,
+          asInt(stats['cultures_cultivated']) ?? 0,
     );
   }
 }

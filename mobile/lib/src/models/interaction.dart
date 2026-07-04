@@ -1,3 +1,4 @@
+import '../core/json.dart';
 import 'package:equatable/equatable.dart';
 
 /// Mirrors App\Http\Resources\InteractionIAResource: one user prompt and the
@@ -37,20 +38,20 @@ class Interaction extends Equatable {
     final response = json['response_data'];
     final parcel = json['parcel'];
     return Interaction(
-      id: (json['id'] as num).toInt(),
+      id: asInt(json['id'])!,
       conversationId: json['conversation_id'] as String?,
       type: json['type'] as String?,
       inputMode: json['input_mode'] as String?,
       promptText: json['prompt_text'] as String? ?? '',
       responseText: response is Map ? response['text'] as String? : null,
       imageUrl: json['image_url'] as String?,
-      tokensUsed: (json['tokens_used'] as num?)?.toInt(),
+      tokensUsed: asInt(json['tokens_used']),
       modelVersion: json['model_version'] as String?,
-      feedbackRating: (json['feedback_rating'] as num?)?.toInt(),
+      feedbackRating: asInt(json['feedback_rating']),
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'].toString())
           : null,
-      parcelId: parcel is Map ? (parcel['id'] as num?)?.toInt() : null,
+      parcelId: parcel is Map ? asInt(parcel['id']) : null,
       parcelNom: parcel is Map ? parcel['nom'] as String? : null,
     );
   }
