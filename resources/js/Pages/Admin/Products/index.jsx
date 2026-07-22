@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
+import AdminLayout from '@/Pages/Admin/layout/AdminLayout';
 
 const TYPE_STYLES = {
     engrais:     'bg-yellow-100 text-yellow-800',
@@ -70,6 +71,7 @@ export default function ProductsIndex() {
     const uniqueTypes = [...new Set(products.map((p) => p.type).filter(Boolean))];
 
     return (
+        <AdminLayout>
         <div className="space-y-6">
             <Head title="Gestion des Produits" />
 
@@ -221,5 +223,6 @@ export default function ProductsIndex() {
                 />
             )}
         </div>
+        </AdminLayout>
     );
 }

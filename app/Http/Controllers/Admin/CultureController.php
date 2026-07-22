@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Culture;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class CultureController extends Controller
 {
@@ -25,14 +26,13 @@ class CultureController extends Controller
             });
         }
         
-        $cultures = $query->orderBy('nom_commun')->paginate(15);
-        return view('admin.cultures.index', compact('cultures'));
+        $cultures = $query->orderBy('nom_commun')->paginate(15)->withQueryString();
+        return Inertia::render('Admin/Cultures/index', compact('cultures'));
     }
 
     public function create()
     {
-        $culture = new Culture();
-        return view('admin.cultures.edit', compact('culture'));
+        return Inertia::render('Admin/Cultures/Form', ['culture' => null]);
     }
 
     public function store(Request $request)
@@ -60,12 +60,12 @@ class CultureController extends Controller
     public function show(Culture $culture)
     {
         $culture->load(['parcels.user', 'products']);
-        return view('admin.cultures.show', compact('culture'));
+        return Inertia::render('Admin/Cultures/Show', compact('culture'));
     }
 
     public function edit(Culture $culture)
     {
-        return view('admin.cultures.edit', compact('culture'));
+        return Inertia::render('Admin/Cultures/Form', compact('culture'));
     }
 
     public function update(Request $request, Culture $culture)

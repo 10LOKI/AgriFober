@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ProductController extends Controller
 {
@@ -22,14 +23,13 @@ class ProductController extends Controller
             $query->where('nom_commercial', 'like', "%$search%");
         }
         
-        $products = $query->orderBy('nom_commercial')->paginate(15);
-        return view('admin.products.index', compact('products'));
+        $products = $query->orderBy('nom_commercial')->paginate(15)->withQueryString();
+        return Inertia::render('Admin/Products/index', compact('products'));
     }
 
     public function create()
     {
-        $product = new Product();
-        return view('admin.products.edit', compact('product'));
+        return Inertia::render('Admin/Products/Form', ['product' => null]);
     }
 
     public function store(Request $request)
@@ -59,12 +59,12 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         $product->load('cultures');
-        return view('admin.products.show', compact('product'));
+        return Inertia::render('Admin/Products/Show', compact('product'));
     }
 
     public function edit(Product $product)
     {
-        return view('admin.products.edit', compact('product'));
+        return Inertia::render('Admin/Products/Form', compact('product'));
     }
 
     public function update(Request $request, Product $product)

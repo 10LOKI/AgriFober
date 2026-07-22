@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
+import AdminLayout from '@/Pages/Admin/layout/AdminLayout';
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
@@ -236,6 +237,7 @@ function RegionBar({ label, count, total, barClass, countClass }) {
 
 export default function Dashboard({ stats }) {
     return (
+        <AdminLayout>
         <div className="space-y-7">
 
             {/* KPI Grid — staggered entrance */}
@@ -365,5 +367,6 @@ export default function Dashboard({ stats }) {
                 ))}
             </div>
         </div>
+        </AdminLayout>
     );
 }

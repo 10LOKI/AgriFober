@@ -7,7 +7,7 @@ use App\Models\Culture;
 use App\Models\Product;
 use App\Models\InteractionIA;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
@@ -19,12 +19,16 @@ class DashboardController extends Controller
     public function index()
     {
         $stats = [
-            'users'                  => User::count(),
-            'parcels'                => Parcel::count(),
-            'cultures'               => Culture::count(),
-            'products'               => Product::count(),
+            'total_users'            => User::count(),
+            'total_parcels'          => Parcel::count(),
+            'total_cultures'         => Culture::count(),
+            'total_products'         => Product::count(),
             'ai_interactions_today'  => InteractionIA::whereDate('created_at', today())->count(),
             'pending_users_count'    => User::where('is_approved', false)->count(),
+            'pending_users'          => User::where('is_approved', false)
+                ->orderBy('created_at', 'desc')
+                ->take(5)
+                ->get(),
             'recent_users'           => User::orderBy('created_at', 'desc')->take(5)->get(),
             'recent_parcels'         => Parcel::with('user')->orderBy('created_at', 'desc')->take(5)->get(),
             'users_by_region'        => User::whereNotNull('region')
@@ -39,6 +43,6 @@ class DashboardController extends Controller
                 ->get(),
         ];
 
-        return view('admin.dashboard', compact('stats'));
+        return Inertia::render('Admin/Dashboard', compact('stats'));
     }
 }

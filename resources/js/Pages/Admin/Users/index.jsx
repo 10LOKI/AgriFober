@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
+import AdminLayout from '@/Pages/Admin/layout/AdminLayout';
 
 const ROLE_STYLES = {
     admin:       'bg-red-100 text-red-800',
@@ -79,6 +80,7 @@ export default function UsersIndex() {
     });
 
     return (
+        <AdminLayout>
         <div className="space-y-6">
             <Head title="Gestion Agriculteurs" />
 
@@ -274,5 +276,6 @@ export default function UsersIndex() {
                 />
             )}
         </div>
+        </AdminLayout>
     );
 }

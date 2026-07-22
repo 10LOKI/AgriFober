@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
+import AdminLayout from '@/Pages/Admin/layout/AdminLayout';
 
 const SAISON_STYLES = {
     printemps: 'bg-green-100  text-green-800',
@@ -56,6 +57,7 @@ export default function CulturesIndex() {
     };
 
     return (
+        <AdminLayout>
         <div className="space-y-6">
             <Head title="Gestion des Cultures" />
 
@@ -202,5 +204,6 @@ export default function CulturesIndex() {
                 />
             )}
         </div>
+        </AdminLayout>
     );
 }

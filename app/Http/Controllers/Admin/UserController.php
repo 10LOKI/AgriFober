@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class UserController extends Controller
 {
@@ -25,8 +26,8 @@ class UserController extends Controller
             }
         }
         
-        $users = $query->paginate(15);
-        return view('admin.users.index', compact('users'));
+        $users = $query->paginate(15)->withQueryString();
+        return Inertia::render('Admin/Users/index', compact('users'));
     }
 
     public function show(User $user)
@@ -34,13 +35,13 @@ class UserController extends Controller
         $user->load(['parcels' => function ($q) {
             $q->with('culture')->orderBy('created_at', 'desc');
         }]);
-        return view('admin.users.show', compact('user'));
+        $user->loadCount(['parcels', 'interactionIas']);
+        return Inertia::render('Admin/Users/Show', compact('user'));
     }
 
     public function create()
     {
-        $user = new User();
-        return view('admin.users.edit', compact('user'));
+        return Inertia::render('Admin/Users/Form', ['user' => null]);
     }
 
     public function store(Request $request)
@@ -65,7 +66,7 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        return view('admin.users.edit', compact('user'));
+        return Inertia::render('Admin/Users/Form', compact('user'));
     }
 
     public function update(Request $request, User $user)
